@@ -45,3 +45,9 @@ LEVEL_SPAWNS = {
 LEVEL_UP_STEPS = {1: 500, 2: 800, 3: 1200, 4: 1600}
 
 MAX_LEVEL = max(LEVEL_SPAWNS.keys())
+
+# HUD / 렌더링
+HUD_FONT_NAME = "applesdgothicneo,applegothic,nanumgothic,malgungothic,arial"
+HUD_FONT_SIZE = 28
+HUD_MARGIN = (10, 10)
+GAMEOVER_LINE_OFFSET = 20

@@ -112,4 +112,4 @@ class Game:
         new_level = level.next_level(state.level, state.steps)
         if new_level != state.level:
             state.level = new_level
-            state.balls = _spawn_balls(state.level)
+            state.balls += _spawn_balls(state.level)

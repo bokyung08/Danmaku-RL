@@ -16,7 +16,7 @@ class Renderer:
         pygame.font.init()
         self.screen = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         pygame.display.set_caption("탄막 회피 시뮬레이터")
-        self.font = pygame.font.SysFont(None, 28)
+        self.font = pygame.font.SysFont(config.HUD_FONT_NAME, config.HUD_FONT_SIZE)
 
     def draw(self, game):
         state = game.state
@@ -36,7 +36,7 @@ class Renderer:
             f"레벨: {state.level}  생존 스텝: {state.steps}  공 개수: {len(state.balls)}",
             True, HUD_COLOR,
         )
-        self.screen.blit(hud, (10, 10))
+        self.screen.blit(hud, config.HUD_MARGIN)
 
         if state.phase == config.PHASE_GAMEOVER:
             self._draw_gameover(state)
@@ -49,10 +49,10 @@ class Renderer:
         self.screen.blit(
             over,
             (config.SCREEN_WIDTH / 2 - over.get_width() / 2,
-             config.SCREEN_HEIGHT / 2 - 20),
+             config.SCREEN_HEIGHT / 2 - config.GAMEOVER_LINE_OFFSET),
         )
         self.screen.blit(
             score,
             (config.SCREEN_WIDTH / 2 - score.get_width() / 2,
-             config.SCREEN_HEIGHT / 2 + 10),
+             config.SCREEN_HEIGHT / 2 + config.GAMEOVER_LINE_OFFSET / 2),
         )
