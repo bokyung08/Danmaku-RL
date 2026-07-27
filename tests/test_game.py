@@ -131,7 +131,7 @@ def test_level_transitions_at_exact_step_threshold():
         game.step(config.ACTION_STOP)
 
     assert game.state.level == 2
-    assert len(game.state.balls) == len(config.LEVEL_SPAWNS[2])
+    assert len(game.state.balls) == len(config.LEVEL_SPAWNS[1]) + len(config.LEVEL_SPAWNS[2])
 
 
 def test_headless_runs_many_steps_without_render():
