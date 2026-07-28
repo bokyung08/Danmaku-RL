@@ -54,6 +54,38 @@ def test_agent_clipped_to_screen_bounds():
     assert game.state.agent.y == config.SCREEN_HEIGHT - game.state.agent.radius
 
 
+def test_diagonal_action_moves_both_axes():
+    game = Game()
+    start_x, start_y = game.state.agent.x, game.state.agent.y
+
+    game.step(config.ACTION_UP_RIGHT)
+
+    assert game.state.agent.x > start_x
+    assert game.state.agent.y < start_y
+
+
+def test_diagonal_speed_matches_cardinal_speed_magnitude():
+    game = Game()
+    start_x, start_y = game.state.agent.x, game.state.agent.y
+
+    game.step(config.ACTION_DOWN_LEFT)
+
+    dx = start_x - game.state.agent.x
+    dy = game.state.agent.y - start_y
+    distance = (dx * dx + dy * dy) ** 0.5
+
+    assert abs(distance - config.AGENT_SPEED) < 1e-9
+
+
+def test_agent_clipped_to_corner_via_diagonal_action():
+    game = Game()
+    for _ in range(200):
+        game.step(config.ACTION_UP_LEFT)
+
+    assert game.state.agent.x == game.state.agent.radius
+    assert game.state.agent.y == game.state.agent.radius
+
+
 def test_wall_reflection_keeps_ball_inside_bounds():
     game = Game()
     prev_velocities = [(ball.vx, ball.vy) for ball in game.state.balls]

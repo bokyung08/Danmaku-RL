@@ -1,4 +1,4 @@
-"""전역 상수 및 레벨 테이블. 이 파일 외에는 매직 넘버를 두지 않는다."""
+import math
 
 # 화면
 SCREEN_WIDTH = 600
@@ -8,6 +8,9 @@ FPS = 60
 # 에이전트
 AGENT_RADIUS = 10
 AGENT_SPEED = 5
+# 대각선 이동 시 축별 속도. 직선 이동과 전체 이동 속도(유클리드 거리)를 맞추기 위해
+# AGENT_SPEED 를 sqrt(2) 로 나눈다.
+AGENT_DIAG_SPEED = AGENT_SPEED / math.sqrt(2)
 
 # 행동(action) 정의
 ACTION_STOP = 0
@@ -15,6 +18,10 @@ ACTION_UP = 1
 ACTION_DOWN = 2
 ACTION_LEFT = 3
 ACTION_RIGHT = 4
+ACTION_UP_LEFT = 5
+ACTION_UP_RIGHT = 6
+ACTION_DOWN_LEFT = 7
+ACTION_DOWN_RIGHT = 8
 
 # 게임 진행 단계
 PHASE_READY = "READY"

@@ -5,19 +5,29 @@ import config
 from game import Game
 from render import Renderer
 
-KEY_ACTION_MAP = {
-    pygame.K_UP: config.ACTION_UP,
-    pygame.K_DOWN: config.ACTION_DOWN,
-    pygame.K_LEFT: config.ACTION_LEFT,
-    pygame.K_RIGHT: config.ACTION_RIGHT,
-}
-
-
 def read_input():
     keys = pygame.key.get_pressed()
-    for key, action in KEY_ACTION_MAP.items():
-        if keys[key]:
-            return action
+    up = keys[pygame.K_UP]
+    down = keys[pygame.K_DOWN]
+    left = keys[pygame.K_LEFT]
+    right = keys[pygame.K_RIGHT]
+
+    if up and left:
+        return config.ACTION_UP_LEFT
+    if up and right:
+        return config.ACTION_UP_RIGHT
+    if down and left:
+        return config.ACTION_DOWN_LEFT
+    if down and right:
+        return config.ACTION_DOWN_RIGHT
+    if up:
+        return config.ACTION_UP
+    if down:
+        return config.ACTION_DOWN
+    if left:
+        return config.ACTION_LEFT
+    if right:
+        return config.ACTION_RIGHT
     return config.ACTION_STOP
 
 

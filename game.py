@@ -45,6 +45,18 @@ def _move_agent(agent, action):
         agent.x -= agent.speed
     elif action == config.ACTION_RIGHT:
         agent.x += agent.speed
+    elif action == config.ACTION_UP_LEFT:
+        agent.x -= config.AGENT_DIAG_SPEED
+        agent.y -= config.AGENT_DIAG_SPEED
+    elif action == config.ACTION_UP_RIGHT:
+        agent.x += config.AGENT_DIAG_SPEED
+        agent.y -= config.AGENT_DIAG_SPEED
+    elif action == config.ACTION_DOWN_LEFT:
+        agent.x -= config.AGENT_DIAG_SPEED
+        agent.y += config.AGENT_DIAG_SPEED
+    elif action == config.ACTION_DOWN_RIGHT:
+        agent.x += config.AGENT_DIAG_SPEED
+        agent.y += config.AGENT_DIAG_SPEED
 
 
 def _clip_agent(agent):
