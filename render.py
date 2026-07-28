@@ -29,30 +29,13 @@ class Renderer:
         for ball in state.balls:
             pygame.draw.circle(
                 self.screen, BALL_COLOR,
-                (int(ball.x), int(ball.y)), ball.radius,
+                (int(ball.x), int(ball.y)), ball.r,
             )
 
         hud = self.font.render(
-            f"레벨: {state.level}  생존 스텝: {state.steps}  공 개수: {len(state.balls)}",
+            f"생존 스텝: {state.steps}",
             True, HUD_COLOR,
         )
         self.screen.blit(hud, config.HUD_MARGIN)
 
-        if state.phase == config.PHASE_GAMEOVER:
-            self._draw_gameover(state)
-
         pygame.display.flip()
-
-    def _draw_gameover(self, state):
-        over = self.font.render("게임 오버", True, GAMEOVER_COLOR)
-        score = self.font.render(f"최종 점수: {state.steps}", True, GAMEOVER_COLOR)
-        self.screen.blit(
-            over,
-            (config.SCREEN_WIDTH / 2 - over.get_width() / 2,
-             config.SCREEN_HEIGHT / 2 - config.GAMEOVER_LINE_OFFSET),
-        )
-        self.screen.blit(
-            score,
-            (config.SCREEN_WIDTH / 2 - score.get_width() / 2,
-             config.SCREEN_HEIGHT / 2 + config.GAMEOVER_LINE_OFFSET / 2),
-        )

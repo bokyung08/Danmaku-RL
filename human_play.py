@@ -36,27 +36,11 @@ def move(up, down, left, right):
     return config.ACTION_STOP
 
 
-def check_restart(event):
-    return event.type == pygame.KEYDOWN and event.key == pygame.K_r
-
-
-def check_quit(event):
-    return event.type == pygame.QUIT
-
-
 def play_loop(game, renderer, clock):
     running = True
     while running:
         action = move(*get_key())
-
-        for event in pygame.event.get():
-            if check_quit(event):
-                running = False
-            if game.state.phase == config.PHASE_GAMEOVER and check_restart(event):
-                game.reset()
-
-        if game.state.phase == config.PHASE_PLAYING:
-            game.step(action)
+        game.step(action)
 
         renderer.draw(game)
         clock.tick(config.FPS)
