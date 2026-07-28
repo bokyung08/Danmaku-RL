@@ -7,6 +7,12 @@ class Agent:
     r: int
     speed: int
 
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.r = config.AGENT_RADIUS
+        self.speed = config.AGENT_SPEED
+
 
 class Ball:
     x: int
