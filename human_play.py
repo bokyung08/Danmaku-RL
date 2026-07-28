@@ -5,13 +5,18 @@ import config
 from game import Game
 from render import Renderer
 
-def read_input():
-    keys = pygame.key.get_pressed()
-    up = keys[pygame.K_UP]
-    down = keys[pygame.K_DOWN]
-    left = keys[pygame.K_LEFT]
-    right = keys[pygame.K_RIGHT]
 
+def get_key():
+    keys = pygame.key.get_pressed()
+    return (
+        keys[pygame.K_UP],
+        keys[pygame.K_DOWN],
+        keys[pygame.K_LEFT],
+        keys[pygame.K_RIGHT],
+    )
+
+
+def move(up, down, left, right):
     if up and left:
         return config.ACTION_UP_LEFT
     if up and right:
@@ -31,23 +36,23 @@ def read_input():
     return config.ACTION_STOP
 
 
-def is_restart_key(event):
+def check_restart(event):
     return event.type == pygame.KEYDOWN and event.key == pygame.K_r
 
 
-def main():
-    game = Game()
-    renderer = Renderer()
-    clock = pygame.time.Clock()
+def check_quit(event):
+    return event.type == pygame.QUIT
 
+
+def play_loop(game, renderer, clock):
     running = True
     while running:
-        action = read_input()
+        action = move(*get_key())
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if check_quit(event):
                 running = False
-            if game.state.phase == config.PHASE_GAMEOVER and is_restart_key(event):
+            if game.state.phase == config.PHASE_GAMEOVER and check_restart(event):
                 game.reset()
 
         if game.state.phase == config.PHASE_PLAYING:
@@ -55,6 +60,14 @@ def main():
 
         renderer.draw(game)
         clock.tick(config.FPS)
+
+
+def main():
+    game = Game()
+    renderer = Renderer()
+    clock = pygame.time.Clock()
+
+    play_loop(game, renderer, clock)
 
     pygame.quit()
     print("게임을 종료합니다.")

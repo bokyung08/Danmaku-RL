@@ -7,7 +7,7 @@
 ## 0. 구현 규칙 (Claude Code 필독)
 
 - `game.py` 에는 `pygame` 을 절대 import 하지 않는다. 게임 로직은 숫자만 다룬다.
-- 화면 그리기는 `render.py`, 키 입력은 `main.py` 가 전담한다.
+- 화면 그리기는 `render.py`, 키 입력은 `human_play.py` 가 전담한다.
 - 모든 상수는 `config.py` 한 곳에 모은다. 다른 파일에 매직 넘버를 두지 않는다.
 - 난이도(공 개수/속도/크기)는 랜덤이 아니라 구체적인 리스트로 미리 정의한다.
 - 코드 내 출력(print) 메시지는 한국어로 작성한다.
@@ -22,11 +22,10 @@
 
 ```
 project/
-├── config.py    # 상수, 레벨 테이블, 공 스폰 테이블
-├── game.py      # 순수 게임 로직 (렌더링·입력 없음)
-├── level.py     # 레벨 파라미터 및 전환 판정
-├── render.py    # pygame 렌더링 전담
-└── main.py      # 사람 플레이 루프 진입점
+├── config.py       # 상수, 레벨 테이블, 공 스폰 테이블
+├── game.py         # 순수 게임 로직 (레벨 파라미터·전환 판정 포함, 렌더링·입력 없음)
+├── render.py       # pygame 렌더링 전담
+└── human_play.py   # 사람 플레이 루프 진입점 (키 입력 전담)
 ```
 
 ## 3. 게임 규칙 요약
@@ -170,7 +169,7 @@ LEVEL_SPAWNS = {
 LEVEL_UP_STEPS = {1: 500, 2: 800, 3: 1200, 4: 1600}
 ```
 
-## 10. 레벨 전환 방식 (`level.py`)
+## 10. 레벨 전환 방식 (`game.py`)
 
 레벨업 시 새 레벨의 공 스폰 리스트를 기존 공 리스트에 추가하는 누적 방식을 사용한다.
 레벨이 오를수록 화면에 공이 계속 쌓여 난이도가 누진적으로 상승한다.
@@ -190,30 +189,57 @@ LEVEL_UP_STEPS = {1: 500, 2: 800, 3: 1200, 4: 1600}
 | HUD | 현재 레벨, 생존 스텝, 공 개수 |
 | GAMEOVER | 화면 중앙에 종료 문구와 최종 점수 |
 
-## 12. 사람 플레이 루프 (`main.py`)
+## 12. 사람 플레이 루프 (`human_play.py`)
+
+입력 판정(`move`)은 pygame 의존 없이 순수하게 방향 bool 4개만 받아 action 을
+반환하도록 분리한다. 그래야 대각선 조합 로직을 pygame 없이 단위 테스트할 수 있다.
 
 ```python
-def main():
-    game = Game(config)
-    renderer = Renderer(config)
-    clock = pygame.time.Clock()
+def get_key():
+    keys = pygame.key.get_pressed()
+    return (keys[pygame.K_UP], keys[pygame.K_DOWN],
+            keys[pygame.K_LEFT], keys[pygame.K_RIGHT])
 
+
+def move(up, down, left, right):
+    # up/down/left/right 조합으로 action(0~8) 결정. pygame 비의존, 단위 테스트 가능.
+    ...
+
+
+def check_restart(event):
+    return event.type == pygame.KEYDOWN and event.key == pygame.K_r
+
+
+def check_quit(event):
+    return event.type == pygame.QUIT
+
+
+def play_loop(game, renderer, clock):
     running = True
     while running:
-        action = read_input()  # 방향키 -> 0~4
+        action = move(*get_key())
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if check_quit(event):
                 running = False
-            if game.phase == "GAMEOVER" and is_restart_key(event):
+            if game.state.phase == config.PHASE_GAMEOVER and check_restart(event):
                 game.reset()
 
-        if game.phase == "PLAYING":
+        if game.state.phase == config.PHASE_PLAYING:
             game.step(action)
 
         renderer.draw(game)
         clock.tick(config.FPS)
 
+
+def main():
+    game = Game()
+    renderer = Renderer()
+    clock = pygame.time.Clock()
+
+    play_loop(game, renderer, clock)
+
+    pygame.quit()
     print("게임을 종료합니다.")
 ```
 
@@ -231,11 +257,10 @@ def main():
 ## 14. 권장 구현 순서
 
 1. `config.py` 에 상수와 레벨 테이블 정의
-2. `game.py` 에 상태 · `reset` · `step` 구현 (렌더링 없이)
+2. `game.py` 에 상태 · `reset` · `step` · 레벨 전환 판정 구현 (렌더링 없이)
 3. 헤드리스로 `step` 을 수백 번 돌려 물리 검증 (print 로 좌표 확인)
 4. `render.py` 로 시각화 추가
-5. `main.py` 에 사람 플레이 루프 연결
-6. `level.py` 분리 및 레벨 전환 확인
+5. `human_play.py` 에 사람 플레이 루프 연결
 
 > 3번에서 렌더링 전에 물리부터 로그로 검증할 것. 문제 발생 시 물리/렌더링 원인을
 > 빠르게 분리할 수 있다.

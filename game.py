@@ -2,7 +2,6 @@
 from dataclasses import dataclass, field
 
 import config
-import level
 
 
 @dataclass
@@ -32,8 +31,25 @@ class GameState:
     phase: str = config.PHASE_READY
 
 
+def _get_spawns(lvl):
+    """레벨에 해당하는 공 스폰 리스트를 반환한다.
+
+    정의된 최고 레벨을 넘으면 마지막 레벨 상태를 유지한다.
+    """
+    clamped = min(lvl, config.MAX_LEVEL)
+    return list(config.LEVEL_SPAWNS[clamped])
+
+
+def _next_level(lvl, steps):
+    """생존 스텝 수가 기준 이상이면 다음 레벨 번호를 반환한다."""
+    threshold = config.LEVEL_UP_STEPS.get(lvl)
+    if threshold is not None and steps >= threshold:
+        return lvl + 1
+    return lvl
+
+
 def _spawn_balls(lvl):
-    return [Ball(x, y, vx, vy, r) for (x, y, vx, vy, r) in level.get_spawns(lvl)]
+    return [Ball(x, y, vx, vy, r) for (x, y, vx, vy, r) in _get_spawns(lvl)]
 
 
 def _move_agent(agent, action):
@@ -121,7 +137,7 @@ class Game:
 
         state.steps += 1
 
-        new_level = level.next_level(state.level, state.steps)
+        new_level = _next_level(state.level, state.steps)
         if new_level != state.level:
             state.level = new_level
             state.balls += _spawn_balls(state.level)

@@ -157,13 +157,39 @@ def test_step_ignored_after_gameover():
     assert game.state.steps == steps_before
 
 
-def test_level_transitions_at_exact_step_threshold():
+def test_level_stays_below_threshold_then_advances_exactly_at_threshold():
     game = Game()
-    for _ in range(config.LEVEL_UP_STEPS[1]):
+    for _ in range(config.LEVEL_UP_STEPS[1] - 1):
         game.step(config.ACTION_STOP)
+    assert game.state.level == 1
+    assert len(game.state.balls) == len(config.LEVEL_SPAWNS[1])
+
+    game.step(config.ACTION_STOP)
 
     assert game.state.level == 2
     assert len(game.state.balls) == len(config.LEVEL_SPAWNS[1]) + len(config.LEVEL_SPAWNS[2])
+
+
+def test_level_plateaus_at_max_level():
+    game = Game()
+    # 마지막 레벨 전환 직전 상태로 강제 설정. 정지 상태로도 최고 레벨까지
+    # 자연스럽게 생존할 수 없으므로(누적된 공과 충돌), 상태를 직접 세팅해 검증한다.
+    game.state.level = config.MAX_LEVEL - 1
+    game.state.steps = config.LEVEL_UP_STEPS[config.MAX_LEVEL - 1] - 1
+    game.state.balls = []
+
+    game.step(config.ACTION_STOP)
+
+    assert game.state.level == config.MAX_LEVEL
+    assert len(game.state.balls) == len(config.LEVEL_SPAWNS[config.MAX_LEVEL])
+
+    balls_at_max = len(game.state.balls)
+    game.state.steps = 10 ** 6
+
+    game.step(config.ACTION_STOP)
+
+    assert game.state.level == config.MAX_LEVEL
+    assert len(game.state.balls) == balls_at_max
 
 
 def test_headless_runs_many_steps_without_render():
