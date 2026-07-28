@@ -1,6 +1,4 @@
-"""pygame 렌더링 전담. 상태를 그리기만 하고 변경하지 않는다."""
 import pygame
-
 import config
 
 AGENT_COLOR = (80, 200, 255)
@@ -33,7 +31,7 @@ class Renderer:
             )
 
         hud = self.font.render(
-            f"생존 스텝: {state.steps}",
+            f"score: {state.score}",
             True, HUD_COLOR,
         )
         self.screen.blit(hud, config.HUD_MARGIN)

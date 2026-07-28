@@ -3,21 +3,23 @@ import math
 # 화면
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
-FPS = 60 #
+FPS = 60 
 
 # 에이전트
-AGENT_RADIUS = 10 #
-AGENT_SPEED = 5# 
-BALL_RADIUS =5
-MIN_BALL_SPEED = 0 
-MAX_BALL_SPEED =0
-
+AGENT_RADIUS = 10
+AGENT_SPEED = 5
+BALL_RADIUS = 5
+MIN_BALL_SPEED = 1
+MAX_BALL_SPEED = 10
 
 MAX_BALL_NUM = 40
-BALL_ADD_FREQUENCY = 100
+SCORE_INTERVAL = 60 
+BALL_ADD_FREQUENCY = 180
 # 대각선 이동 시 축별 속도. 직선 이동과 전체 이동 속도(유클리드 거리)를 맞추기 위해
 # AGENT_SPEED 를 sqrt(2) 로 나눈다.
 AGENT_DIAG_SPEED = AGENT_SPEED / math.sqrt(2)
+
+
 
 # 행동(action) 정의
 ACTION_STOP = 0

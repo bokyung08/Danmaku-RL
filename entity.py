@@ -9,6 +9,7 @@ class Agent:
     y: float
     radius: int = config.AGENT_RADIUS
     speed: int = config.AGENT_SPEED
+    
 
 
 @dataclass

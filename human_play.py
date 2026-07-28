@@ -1,4 +1,3 @@
-"""사람 플레이 루프 진입점. 키 입력 처리를 전담한다."""
 import pygame
 
 import config
@@ -41,6 +40,9 @@ def play_loop(game, renderer, clock):
     while running:
         action = move(*get_key())
         game.step(action)
+        for event in pygame.event.get(): 
+            if event.type==pygame.QUIT: 
+                return 
 
         renderer.draw(game)
         clock.tick(config.FPS)

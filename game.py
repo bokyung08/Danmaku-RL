@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 
 import config
 from entity import Ball, Agent
-
+from random import randint
 
 @dataclass
 class GameState:
@@ -11,11 +11,17 @@ class GameState:
     balls: list = field(default_factory=list)
     steps: int = 0
     alive: bool = True
+    score: int = 0 
     
 
 def _spawn_balls(balls):
     if len(balls)<=config.MAX_BALL_NUM: 
-        balls.append(Ball(0,0))
+        balls.append(Ball(
+            0,
+            0, 
+            vx=randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED),
+            vy=randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED)
+        ))
 
 
 def _move_agent(agent, action):
@@ -50,7 +56,7 @@ def _reflect(ball):
         ball.x = ball.r
         ball.vx = -ball.vx
     elif ball.x + ball.r > config.SCREEN_WIDTH:
-        ball.x = config.SCREEN_WIDTH - ball.radius
+        ball.x = config.SCREEN_WIDTH - ball.r
         ball.vx = -ball.vx
 
     if ball.y - ball.r < 0:
@@ -79,6 +85,7 @@ class Game:
         state.balls = []
         state.steps = 0
         state.alive = True
+        state.score=0
     
 
     def step(self, action):
@@ -93,7 +100,8 @@ class Game:
                 print(state.steps)
                 return self.reset()
             _reflect(ball)
-
+        if state.steps%config.SCORE_INTERVAL ==0: 
+            state.score+=1
         if state.steps % config.BALL_ADD_FREQUENCY == 0:
             _spawn_balls(state.balls)
         
