@@ -38,3 +38,8 @@ HUD_FONT_NAME = "applesdgothicneo,applegothic,nanumgothic,malgungothic,arial"
 HUD_FONT_SIZE = 28
 HUD_MARGIN = (10, 10)
 
+AGENT_COLOR = (80, 200, 255)
+BALL_COLOR = (255, 90, 90)
+BACKGROUND_COLOR = (15, 15, 25)
+HUD_COLOR = (230, 230, 230)
+GAMEOVER_COLOR = (255, 255, 255)
