@@ -142,8 +142,7 @@ class Game:
     def __init__(self): 
         self.state = GameState()
         self.reset()
-        if 2 * (config.AGENT_RADIUS+config.BALL_RADIUS) < config.AGENT_SPEED + config.MAX_BALL_SPEED:
-            print("With this setting, the ball can pass through the agent. Reduce the speed or size of the ball and the agent.")
+        
     def reset(self):
         state = self.state 
         state.agent = Agent(x = config.SCREEN_WIDTH//2, y = config.SCREEN_HEIGHT//2)
