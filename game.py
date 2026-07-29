@@ -13,11 +13,11 @@ class GameState:
     score: int = 0 
 
 def _spawn_balls(balls):
-    if len(balls) <= config.MAX_BALL_NUM: 
-        balls.append(Ball(0, 0 , 
+    if len(balls) < config.MAX_BALL_NUM: 
+        balls.append(Ball(x = config.BALL_RADIUS,
+                          y = config.BALL_RADIUS, 
                           vx = randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED),
                           vy = randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED)))
-
         
 def _is_Collision(agent, ball): 
     dx = agent.x - ball.x
@@ -97,3 +97,4 @@ class Game:
         if state.steps % config.BALL_ADD_FREQUENCY == 0: 
             _spawn_balls(state.balls)
         state.steps += 1 
+        #print(len(state.balls))
