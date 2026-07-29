@@ -18,6 +18,7 @@ def _spawn_balls(balls):
                           y = config.BALL_RADIUS, 
                           vx = randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED),
                           vy = randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED)))
+
         
 def _is_Collision(agent, ball): 
     dx = agent.x - ball.x
