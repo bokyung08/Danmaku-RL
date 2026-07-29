@@ -22,7 +22,7 @@ class Ball:
     vy: float
     r: float
 
-    def __init__(self):
+    def __init__(self, x, y, vx, vy):
         # 첫 충돌 판정을 무시하기 위해 반지름만큼 떨어진 거리에 공 생성
         self.x = config.BALL_RADIUS+1
         self.y = config.BALL_RADIUS+1

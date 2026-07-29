@@ -1,0 +1,9 @@
+# 초기 파일만 추적하고 나머지는 전부 무시
+*
+!.gitignore
+!README.md
+!config.py
+!entity.py
+!game.py
+!human.py
+!render.py
