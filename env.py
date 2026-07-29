@@ -1,16 +1,17 @@
 from game import Game
 from entity import Ball, Agent 
 import config 
+from render import Renderer
 
 import numpy as np
 from collections import deque
 from PIL import Image
 import random 
-
+import gymnasium as gym
 from gymnasium import Env
 from gymnasium.spaces import Box, Discrete
 
-class DanmakuEnv: 
+class DanmakuEnv(gym.Env): 
     def __init__(self): 
         self.game = Game()
         self.action_space = Discrete(9)
@@ -19,6 +20,7 @@ class DanmakuEnv:
         self.max_time_steps = config.MAX_TIME_STEPS
         self.observation_space = Box()
         self.frames = deque(maxlen = config.N_FRAME_STACK)
+        self.renderer = Renderer()
 
     def reset(self, seed):
         super().reset(seed=seed)
@@ -60,20 +62,25 @@ class DanmakuEnv:
         return observation, total_reward, terminated, truncated, info
         
     def _get_obs(self): # 현재 state -> RGB렌더 =-> image_to_gray -> resize_image -> return (84,84)
-        grayscale_img = self.image_to_gray(self.game.state)
-        resize_img = self.resize_image(grayscale_img)
+        # 현재 게임 state를 render
+        image = self.renderer.get_image(self.game)  # (600,600,3)
+        grayscale_img = self.image_to_gray(image)  # (600,600)
+        resize_img = self.resize_image(grayscale_img)  # (84, 84)
         return resize_img
+    
     def _get_info(self):
+        pass
 
+    def _frame_stack(self,obs_list):
+        pass
 
-    def _frame_stack(obs_list):
+    def image_to_gray(self, arr):
+        return Image.fromarray(arr).convert("L")
 
+    def resize_image(self, image): 
+        resized = image.resize(
+            self.image_size,
+            Image.Resampling.BILINEAR,
+        )
+        return np.asarray(resized, dtype=np.uint8)
 
-    def image_to_gray(arr):
-        array = (array - array.min()) / (array.max() - array.min() + 1e-8)
-        array = (array * 255).astype(np.uint8)
-
-        return Image.fromarray(array, mode="L")
-
-    def resize_image(arr): 
-        return 
