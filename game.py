@@ -173,4 +173,4 @@ class Game:
             state.score += 1
 
         
-        #print(len(state.balls))
+    

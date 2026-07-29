@@ -18,7 +18,7 @@ class DanmakuEnv(Env):
         self.image_size = (84, 84)
         self.stack_size = config.N_FRAME_STACK
         self.max_time_steps = config.MAX_TIME_STEPS
-        self.observation_space = Box(low = 0, high = 255, shape = (4, 84, 84), dtype = np.int8)
+        self.observation_space = Box(low = 0, high = 255, shape = (self.stack_size, 84, 84), dtype = np.uint8)
         self.frames = deque(maxlen = config.N_FRAME_STACK)
         self.renderer = Renderer()
 
@@ -70,7 +70,7 @@ class DanmakuEnv(Env):
 
         gray_img = self.image_to_gray(rgb_array)
         resize_img = self.resize_image(gray_img)
-        return np.array(resize_img, dtype=np.int8)
+        return np.array(resize_img, dtype=np.uint8)
 
     def image_to_gray(self, arr):
         return Image.fromarray(arr, mode="RGB").convert("L")
