@@ -2,10 +2,10 @@ import config
 import random
 
 class Agent:
-    x: int
-    y: int
+    x: float
+    y: float
     r: int
-    speed: int
+    speed: float
 
     def __init__(self, x, y):
         self.x = x
@@ -15,17 +15,15 @@ class Agent:
 
 
 class Ball:
-    x: int
-    y: int
-    vx: int
-    vy: int
+    x: float
+    y: float
+    vx: float
+    vy: float
     r: int
 
     def __init__(self, x, y, vx, vy):
-        # 첫 충돌 판정을 무시하기 위해 반지름만큼 떨어진 거리에 공 생성
-        self.x = config.BALL_RADIUS
-        self.y = config.BALL_RADIUS
-
-        self.vx = random.randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED)
-        self.vy = random.randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED)
+        self.x = x
+        self.y = y
+        self.vx = vx
+        self.vy = vy
         self.r = config.BALL_RADIUS

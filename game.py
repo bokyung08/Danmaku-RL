@@ -92,10 +92,11 @@ class Game:
                 return 
             _reflect(ball)
 
-        if state.steps % config.SCORE_INTERVAL == 0: 
+        state.steps += 1
+
+        if state.steps % config.SCORE_INTERVAL_STEPS == 0:
             state.score += 1
 
-        if state.steps % config.BALL_ADD_FREQUENCY == 0: 
+        if state.steps % config.BALL_ADD_INTERVAL_STEPS == 0:
             _spawn_balls(state.balls)
-        state.steps += 1 
         #print(len(state.balls))
