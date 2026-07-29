@@ -5,7 +5,7 @@ import math
 class Agent:
     x: float
     y: float
-    r: float
+    r: int
     speed: float
 
     def __init__(self, x, y):
@@ -20,7 +20,7 @@ class Ball:
     y: float
     vx: float
     vy: float
-    r: float
+    r: int
 
     def __init__(self, x, y, vx, vy):
         # 첫 충돌 판정을 무시하기 위해 반지름만큼 떨어진 거리에 공 생성
