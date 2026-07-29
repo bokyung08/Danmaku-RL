@@ -18,10 +18,10 @@ class DanmakuEnv(gym.Env):
         self.stack_size = config.N_FRAME_STACK
         self.max_time_steps = config.MAX_TIME_STEPS
         self.observation_space = Box(
-            low=0, high=255, shape=(self.stack_size, *self.image_size)
+            low=0, high=255, shape=(self.stack_size, *self.image_size), dtype=np.uint8
         )
         self.frames = deque(maxlen = config.N_FRAME_STACK)
-        self.renderer = Renderer(render="rgb_array")
+        self.renderer = Renderer(render_mode="rgb_array")
 
     def reset(self, seed = None, options=None):
         super().reset(seed=seed)
@@ -41,24 +41,23 @@ class DanmakuEnv(gym.Env):
         return observation, info 
 
     def step(self, action):
-        total_reward= 0
+        reward= 0
         terminated = False
         truncated = False 
-
+        prev_score = self.game.state.score
         for _ in range(config.N_FRAME_SKIP): 
             self.game.step(action)
             terminated = not self.game.state.alive
             truncated = self.game.state.steps >= self.max_time_steps
-            reward = 0 if terminated else 1
-            total_reward += reward 
-
+            
             if terminated or truncated: 
                 break
-
+        reward = self.game.state.score - prev_score
         curr_obs = self._get_obs() 
         observation = self._frame_stack(curr_obs)
         info = self._get_info() # info return 
-        return observation, total_reward, terminated, truncated, info
+        
+        return observation, reward, terminated, truncated, info
         
     def _get_obs(self): # 현재 state -> RGB렌더 =-> image_to_gray -> resize_image -> return (84,84)
         # 현재 게임 state를 render
