@@ -22,9 +22,6 @@ MAX_BALL_NUM = 40
 SCORE_INTERVAL = PHYSICS_FPS
 BALL_ADD_FREQUENCY = PHYSICS_FPS * 3 
 
-
-
-
 # 행동(action) 정의
 ACTION_STOP = 0
 ACTION_UP = 1
@@ -35,6 +32,12 @@ ACTION_UP_LEFT = 5
 ACTION_UP_RIGHT = 6
 ACTION_DOWN_LEFT = 7
 ACTION_DOWN_RIGHT = 8
+
+
+
+# RL config
+N_FRAME_STACK = 4 
+MAX_TIME_STEPS = 10000
 
 # HUD / 렌더링
 HUD_FONT_NAME = "applesdgothicneo,applegothic,nanumgothic,malgungothic,arial"
