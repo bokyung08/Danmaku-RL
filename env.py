@@ -22,7 +22,7 @@ class DanmakuEnv(gym.Env):
         self.frames = deque(maxlen = config.N_FRAME_STACK)
         self.renderer = Renderer()
 
-    def reset(self, seed):
+    def reset(self, seed = None):
         super().reset(seed=seed)
 
         if seed is not None: 
@@ -32,7 +32,7 @@ class DanmakuEnv(gym.Env):
         self.frames.clear()
         first_obs = self._get_obs()
 
-        for i in range(self.stack_size):
+        for _ in range(self.stack_size):
             self.frames.append(first_obs) #stack frame 처음 네 프레임 ㅁ쌓기  
 
         observation = np.stack(self.frames, axis = 0)
@@ -50,14 +50,12 @@ class DanmakuEnv(gym.Env):
             truncated = self.game.state.steps >= self.max_time_steps
             reward = 0 if terminated else 1
             total_reward += reward 
-            
+
             if terminated or truncated: 
                 break
 
-        curr_obs = self._get_obs() # 관측값 하나로 결합 
-        self.frames = self._frame_stack(curr_obs)
-
-        observation = np.stack(self.frames, axis = 0)
+        curr_obs = self._get_obs() 
+        observation = self._frame_stack(curr_obs)
         info = self._get_info() # info return 
         return observation, total_reward, terminated, truncated, info
         
@@ -71,9 +69,6 @@ class DanmakuEnv(gym.Env):
     def _get_info(self):
         pass
 
-    def _frame_stack(self,obs_list):
-        pass
-
     def image_to_gray(self, arr):
         return Image.fromarray(arr).convert("L")
 
@@ -83,4 +78,9 @@ class DanmakuEnv(gym.Env):
             Image.Resampling.BILINEAR,
         )
         return np.asarray(resized, dtype=np.uint8)
+
+
+    def _frame_stack(self, obs):
+        self.frames.append(obs)
+        return np.stack(self.frames, axis = 0)
 
