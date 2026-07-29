@@ -1,6 +1,7 @@
 from game import Game
-from entity import Ball, Agent 
+from render import Renderer
 import config 
+import pygame 
 
 import numpy as np
 from collections import deque
@@ -17,8 +18,9 @@ class DanmakuEnv(Env):
         self.image_size = (84, 84)
         self.stack_size = config.N_FRAME_STACK
         self.max_time_steps = config.MAX_TIME_STEPS
-        self.observation_space = Box()
+        self.observation_space = Box(low = 0, high = 255, shape = (4, 84, 84), dtype = np.uint8)
         self.frames = deque(maxlen = config.N_FRAME_STACK)
+        self.renderer = Renderer()
 
     def reset(self, seed = None):
         super().reset(seed=seed)
@@ -31,7 +33,7 @@ class DanmakuEnv(Env):
         first_obs = self._get_obs()
 
         for _ in range(self.stack_size):
-            self.frames.append(first_obs) #stack frame 처음 네 프레임 ㅁ쌓기  
+            self.frames.append(first_obs) 
 
         observation = np.stack(self.frames, axis = 0)
         info = self._get_info()
@@ -56,23 +58,25 @@ class DanmakuEnv(Env):
         observation = self._frame_stack(curr_obs)
         info = self._get_info() # info return 
         return observation, total_reward, terminated, truncated, info
-        
-    def _get_obs(self): # 현재 state -> RGB렌더 =-> image_to_gray -> resize_image -> return (84,84)
-        grayscale_img = self.image_to_gray(self.game.state)
-        resize_img = self.resize_image(grayscale_img)
-        return resize_img
-
+    
     def _frame_stack(self, obs):
         self.frames.append(obs)
         return np.stack(self.frames, axis = 0)
+        
+    def _get_obs(self): # 현재 state -> RGB렌더 =-> image_to_gray -> resize_image -> return (84,84)
+        self.renderer.draw(self.game, view_score = False)
+        rgb_array = pygame.surfarray.array3d(self.renderer.screen)
+        rgb_array = rgb_array.transpose(1,0,2)
+
+        gray_img = self.image_to_gray(self.game.state)
+        resize_img = self.resize_image(gray_img)
+        return np.array(resize_img, dtype=np.int8)
 
     def image_to_gray(self, arr):
-        array = (array - array.min()) / (array.max() - array.min() + 1e-8)
-        array = (array * 255).astype(np.uint8)
-        return Image.fromarray(array, mode="L")
+        return Image.fromarray(arr, mode="RGB").convert("L")
 
-    def resize_image(self, arr): 
-        return 
+    def resize_image(self, img): 
+        return img.resize(self.image_size)
     
     def _get_info(self):
-        return 
+        return {}
