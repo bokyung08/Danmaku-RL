@@ -54,7 +54,6 @@ def play_loop(game, renderer, clock):
         else: 
             accumulator = 0.0
         renderer.draw(game)
-        
 
 def main():
     game = Game()
