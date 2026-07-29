@@ -20,7 +20,7 @@ def _spawn_balls(balls):
                           vy = randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED)))
 
         
-def _is_Collision(agent, ball): 
+def _is_collision(agent, ball): 
     dx = agent.x - ball.x
     dy = agent.y - ball.y
     r = agent.r + ball.r
@@ -88,7 +88,7 @@ class Game:
         for ball in state.balls: 
             ball.x += ball.vx
             ball.y += ball.vy
-            if _is_Collision(state.agent, ball): 
+            if _is_collision(state.agent, ball): 
                 print(state.score)
                 state.alive = False 
                 return 
