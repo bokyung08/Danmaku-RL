@@ -8,7 +8,6 @@ from collections import deque
 from PIL import Image
 import random 
 import gymnasium as gym
-from gymnasium import Env
 from gymnasium.spaces import Box, Discrete
 
 class DanmakuEnv(gym.Env): 
@@ -18,11 +17,13 @@ class DanmakuEnv(gym.Env):
         self.image_size = (84, 84)
         self.stack_size = config.N_FRAME_STACK
         self.max_time_steps = config.MAX_TIME_STEPS
-        self.observation_space = Box()
+        self.observation_space = Box(
+            low=0, high=255, shape=(self.stack_size, *self.image_size)
+        )
         self.frames = deque(maxlen = config.N_FRAME_STACK)
-        self.renderer = Renderer()
+        self.renderer = Renderer(render="rgb_array")
 
-    def reset(self, seed = None):
+    def reset(self, seed = None, options=None):
         super().reset(seed=seed)
 
         if seed is not None: 
@@ -33,9 +34,9 @@ class DanmakuEnv(gym.Env):
         first_obs = self._get_obs()
 
         for _ in range(self.stack_size):
-            self.frames.append(first_obs) #stack frame 처음 네 프레임 ㅁ쌓기  
+            self.frames.append(first_obs) #stack frame 처음 네 프레임 쌓기
 
-        observation = np.stack(self.frames, axis = 0)
+        observation = np.stack(self.frames, axis = 0)  # (4,84,84)
         info = self._get_info()
         return observation, info 
 
@@ -67,7 +68,10 @@ class DanmakuEnv(gym.Env):
         return resize_img
     
     def _get_info(self):
-        pass
+        return {
+            "score": self.game.state.score,
+            "steps": self.game.state.steps
+        }
 
     def image_to_gray(self, arr):
         return Image.fromarray(arr).convert("L")

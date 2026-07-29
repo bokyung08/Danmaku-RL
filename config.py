@@ -35,10 +35,10 @@ ACTION_DOWN_RIGHT = 8
 
 
 
-# RL config
+# Env config
 N_FRAME_STACK = 4 
 N_FRAME_SKIP = 4 
-MAX_TIME_STEPS = 10000
+MAX_TIME_STEPS = 108000  # 30 minutes game playing
 
 # HUD / 렌더링
 HUD_FONT_NAME = "applesdgothicneo,applegothic,nanumgothic,malgungothic,arial"
