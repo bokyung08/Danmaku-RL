@@ -58,20 +58,19 @@ def _is_collision(agent_prev, agent, ball_prev, ball):
 
 
 
- 
 def _reflect(ball): 
     if ball.x - ball.r < 0: 
-        ball.x = ball.r 
+        ball.x = 2 * ball.r - ball.x
         ball.vx = -ball.vx
     elif ball.x + ball.r > config.SCREEN_WIDTH: 
-        ball.x = config.SCREEN_WIDTH - ball.r 
+        ball.x = 2 * config.SCREEN_WIDTH - 2 * ball.r - ball.x
         ball.vx = -ball.vx 
 
     if ball.y - ball.r < 0: 
-        ball.y = ball.r
+        ball.y = 2 * ball.r - ball.y
         ball.vy = -ball.vy 
     elif ball.y + ball.r > config.SCREEN_HEIGHT: 
-        ball.y = config.SCREEN_HEIGHT - ball.r 
+        ball.y = 2 * config.SCREEN_HEIGHT - 2 * ball.r - ball.y
         ball.vy = -ball.vy 
 
 def _move_agent(agent, action): 
