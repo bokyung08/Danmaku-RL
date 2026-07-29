@@ -10,7 +10,7 @@ import random
 from gymnasium import Env
 from gymnasium.spaces import Box, Discrete
 
-class DanmakuEnv: 
+class DanmakuEnv(Env): 
     def __init__(self): 
         self.game = Game()
         self.action_space = Discrete(9)
@@ -20,7 +20,7 @@ class DanmakuEnv:
         self.observation_space = Box()
         self.frames = deque(maxlen = config.N_FRAME_STACK)
 
-    def reset(self, seed):
+    def reset(self, seed = None):
         super().reset(seed=seed)
 
         if seed is not None: 
@@ -30,7 +30,7 @@ class DanmakuEnv:
         self.frames.clear()
         first_obs = self._get_obs()
 
-        for i in range(self.stack_size):
+        for _ in range(self.stack_size):
             self.frames.append(first_obs) #stack frame 처음 네 프레임 ㅁ쌓기  
 
         observation = np.stack(self.frames, axis = 0)
@@ -48,14 +48,12 @@ class DanmakuEnv:
             truncated = self.game.state.steps >= self.max_time_steps
             reward = 0 if terminated else 1
             total_reward += reward 
-            
+
             if terminated or truncated: 
                 break
 
-        curr_obs = self._get_obs() # 관측값 하나로 결합 
-        self.frames = self._frame_stack(curr_obs)
-
-        observation = np.stack(self.frames, axis = 0)
+        curr_obs = self._get_obs() 
+        observation = self._frame_stack(curr_obs)
         info = self._get_info() # info return 
         return observation, total_reward, terminated, truncated, info
         
@@ -63,17 +61,18 @@ class DanmakuEnv:
         grayscale_img = self.image_to_gray(self.game.state)
         resize_img = self.resize_image(grayscale_img)
         return resize_img
-    def _get_info(self):
 
+    def _frame_stack(self, obs):
+        self.frames.append(obs)
+        return np.stack(self.frames, axis = 0)
 
-    def _frame_stack(obs_list):
-
-
-    def image_to_gray(arr):
+    def image_to_gray(self, arr):
         array = (array - array.min()) / (array.max() - array.min() + 1e-8)
         array = (array * 255).astype(np.uint8)
-
         return Image.fromarray(array, mode="L")
 
-    def resize_image(arr): 
+    def resize_image(self, arr): 
+        return 
+    
+    def _get_info(self):
         return 
