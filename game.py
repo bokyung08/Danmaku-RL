@@ -19,26 +19,58 @@ def _spawn_balls(balls):
                           vx = randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED),
                           vy = randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED)))
 
-        
-def _is_Collision(agent, ball): 
-    dx = agent.x - ball.x
-    dy = agent.y - ball.y
-    r = agent.r + ball.r
-    return dx ** 2 + dy ** 2 <= r ** 2 
- 
+# the simple version of collision
+# def _is_collision(agent, ball): 
+#     dx = agent.x - ball.x
+#     dy = agent.y - ball.y
+#     r = agent.r + ball.r
+#     return dx ** 2 + dy ** 2 <= r ** 2 
+
+# frame까지 고려한 collision
+def _is_collision(agent_prev, agent, ball_prev, ball):
+    prev_agent_x, prev_agent_y = agent_prev
+    prev_ball_x, prev_ball_y = ball_prev
+
+    px, py = prev_ball_x - prev_agent_x, prev_ball_y - prev_agent_y
+    agent_vx, agent_vy = agent.x - prev_agent_x, agent.y - prev_agent_y
+    ball_vx, ball_vy = ball.x - prev_ball_x, ball.y - prev_ball_y
+
+    R = agent.r + ball.r
+
+    # 상대속도
+    vx, vy = ball_vx - agent_vx, ball_vy - agent_vy
+
+    a = vx**2 + vy**2
+    b = 2 * (px * vx + py * vy)
+    c = px**2 + py**2 - R**2
+
+    if c <= 0: return True  # frame 시작시 원 내부인가? 
+    if a == 0: return False  # 상대 위치가 그대로임. 
+
+
+    discriminant = b**2 - 4*a*c
+
+    if discriminant < 0: return False
+    else:
+        hit_t = (-b - discriminant**(1/2)) / (2*a)
+        if 0 <= hit_t <= 1: return True
+        else: return False
+
+
+
 def _reflect(ball): 
     if ball.x - ball.r < 0: 
-        ball.x = ball.r 
+        ball.x = 2 * ball.r - ball.x
         ball.vx = -ball.vx
     elif ball.x + ball.r > config.SCREEN_WIDTH: 
-        ball.x = config.SCREEN_WIDTH - ball.r 
+        ball.x = 2 * config.SCREEN_WIDTH - 2 * ball.r - ball.x
         ball.vx = -ball.vx 
 
     if ball.y - ball.r < 0: 
-        ball.y = ball.r
+        ball.y = 2 * ball.r - ball.y
         ball.vy = -ball.vy 
     elif ball.y + ball.r > config.SCREEN_HEIGHT: 
-        ball.y = config.SCREEN_HEIGHT - ball.r 
+        ball.y = 2 * config.SCREEN_HEIGHT - 2 * ball.r - ball.y
         ball.vy = -ball.vy 
 
 def _move_agent(agent, action): 
@@ -83,12 +115,16 @@ class Game:
     def step(self, action): 
         state = self.state
         if not state.alive: return 
+
+        agent_prev = (state.agent.x, state.agent.y)
         _move_agent(state.agent, action)
 
         for ball in state.balls: 
+            ball_prev = (ball.x, ball.y)
             ball.x += ball.vx
             ball.y += ball.vy
-            if _is_Collision(state.agent, ball): 
+
+            if _is_collision(agent_prev, state.agent, ball_prev, ball): 
                 print(state.score)
                 state.alive = False 
                 return 
