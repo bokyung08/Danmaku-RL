@@ -18,7 +18,7 @@ class DanmakuEnv(Env):
         self.image_size = (84, 84)
         self.stack_size = config.N_FRAME_STACK
         self.max_time_steps = config.MAX_TIME_STEPS
-        self.observation_space = Box(low = 0, high = 255, shape = (4, 84, 84), dtype = np.uint8)
+        self.observation_space = Box(low = 0, high = 255, shape = (4, 84, 84), dtype = np.int8)
         self.frames = deque(maxlen = config.N_FRAME_STACK)
         self.renderer = Renderer()
 
@@ -68,7 +68,7 @@ class DanmakuEnv(Env):
         rgb_array = pygame.surfarray.array3d(self.renderer.screen)
         rgb_array = rgb_array.transpose(1,0,2)
 
-        gray_img = self.image_to_gray(self.game.state)
+        gray_img = self.image_to_gray(rgb_array)
         resize_img = self.resize_image(gray_img)
         return np.array(resize_img, dtype=np.int8)
 
