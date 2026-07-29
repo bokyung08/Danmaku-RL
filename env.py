@@ -22,7 +22,7 @@ class DanmakuEnv(Env):
         self.frames = deque(maxlen = config.N_FRAME_STACK)
         self.renderer = Renderer()
 
-    def reset(self, seed = None):
+    def reset(self, seed = None, options = None):
         super().reset(seed=seed)
 
         if seed is not None: 
@@ -49,14 +49,14 @@ class DanmakuEnv(Env):
             terminated = not self.game.state.alive
             truncated = self.game.state.steps >= self.max_time_steps
             reward = 0 if terminated else 1
-            total_reward += reward 
+            total_reward += reward # 현재는 step 기준 보상, 변경 필요.
 
             if terminated or truncated: 
                 break
 
         curr_obs = self._get_obs() 
         observation = self._frame_stack(curr_obs)
-        info = self._get_info() # info return 
+        info = self._get_info() 
         return observation, total_reward, terminated, truncated, info
     
     def _frame_stack(self, obs):
