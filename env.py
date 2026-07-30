@@ -91,9 +91,13 @@ class DanmakuVecEnv:
     BALL_FEATURE_NUM = 5
 
     def __init__(self): 
+        self.agent_vx = 0.0
+        self.agent_vy = 0.0
         self.game = Game()
         self.action_space = range(9)
-        self.observation_shape = (self.AGENT_FEATURE_NUM + self.BALL_FEATURE_NUM * config.MAX_BALL_NUM)
+        self.observation_shape = (
+            self.AGENT_FEATURE_NUM + self.BALL_FEATURE_NUM * config.MAX_BALL_NUM,
+        )
         self.max_time_steps = config.MAX_TIME_STEPS
         
     def reset(self, seed = None):
