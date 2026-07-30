@@ -84,7 +84,7 @@ def main():
 
         game.update(dx * speed, dy * speed)
         renderer.draw(game)
-        clock.tick(config.FPS)
+        clock.tick(config.RENDER_FPS)
 
     pygame.quit()
 
