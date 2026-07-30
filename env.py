@@ -101,6 +101,8 @@ class DanmakuVecEnv:
         self.max_time_steps = config.MAX_TIME_STEPS
         
     def reset(self, seed = None):
+        self.agent_vx = 0.0
+        self.agent_vy = 0.0
         self.game.reset(seed=seed)
         observation = self._get_obs()
         info = self._get_info()
