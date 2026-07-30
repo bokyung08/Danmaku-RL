@@ -41,7 +41,6 @@ N_FRAME_SKIP = 4 # 하나의 Action 반복 횟수
 MAX_TIME_STEPS = 108000  # 30 minutes game playing
 
 # HUD / 렌더링
-HUD_FONT_NAME = ""
 HUD_FONT_SIZE = 28
 HUD_MARGIN = (10, 10)
 
