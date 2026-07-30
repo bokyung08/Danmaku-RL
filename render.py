@@ -57,37 +57,3 @@ class Renderer:
         self.draw_canvas(game, view_score)
         self.screen.blit(self.canvas, (0,0))
         pygame.display.flip()
-
-
-def main():
-    renderer = Renderer()
-    game = Game()
-    clock = pygame.time.Clock()
-
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-        keys = pygame.key.get_pressed()
-        dx = (keys[pygame.K_RIGHT] or keys[pygame.K_d]) - (
-            keys[pygame.K_LEFT] or keys[pygame.K_a]
-        )
-        dy = (keys[pygame.K_DOWN] or keys[pygame.K_s]) - (
-            keys[pygame.K_UP] or keys[pygame.K_w]
-        )
-        if dx and dy:
-            speed = config.AGENT_DIAG_SPEED
-        else:
-            speed = config.AGENT_SPEED
-
-        game.update(dx * speed, dy * speed)
-        renderer.draw(game)
-        clock.tick(config.RENDER_FPS)
-
-    pygame.quit()
-
-
-if __name__=="__main__":
-    main()
