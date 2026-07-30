@@ -58,6 +58,11 @@ class Renderer:
         self.screen.blit(self.canvas, (0,0))
         pygame.display.flip()
 
+    def close(self):
+        if self.screen is not None:
+            pygame.display.quit()  # pygame은 살리고 창만 닫음
+            self.screen = None
+
 
 def main():
     renderer = Renderer()
