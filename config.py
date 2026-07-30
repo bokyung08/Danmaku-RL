@@ -42,7 +42,6 @@ MAX_TIME_STEPS = 108000  # 30 minutes game playing
 SEED = None  # None or int, None일 경우 실행할 때마다 다른 실행 결과
 
 # HUD / 렌더링
-HUD_FONT_NAME = ""
 HUD_FONT_SIZE = 28
 HUD_MARGIN = (10, 10)
 
