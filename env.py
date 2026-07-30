@@ -147,7 +147,7 @@ class DanmakuVecEnv:
         state = self.game.state
         agent = state.agent 
         obs_size = (self.AGENT_FEATURE_NUM + self.BALL_FEATURE_NUM * config.MAX_BALL_NUM)
-        obs = np.zeros(obs_size, dtype=np.float32) # 공, 에이전트 없는 상태 (패딩 주기 위해 zeros로 정규화)
+        obs = np.zeros(obs_size, dtype=np.float32) # 공, 에이전트 없는 상태 (패딩 주기 위해 zeros로 초기화)
 
         min_agent_x = agent.r # 에이전트의 반지름 만큼 떨어져 있는 곳이 min 좌표 
         max_agent_x = config.SCREEN_WIDTH - agent.r 
