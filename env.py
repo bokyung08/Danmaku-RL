@@ -1,5 +1,4 @@
 from game import Game
-from entity import Ball, Agent 
 import config 
 from render import Renderer
 
@@ -7,25 +6,22 @@ import numpy as np
 from collections import deque
 from PIL import Image
 import random 
-import gymnasium as gym
-from gymnasium.spaces import Box, Discrete
 
-class DanmakuEnv(gym.Env): 
+class DanmakuEnv: 
     def __init__(self): 
         self.game = Game()
-        self.action_space = Discrete(9)
+        self.action_space = range(9)
+        self.n_actions = len(self.action_space)
+
         self.image_size = (84, 84)
         self.stack_size = config.N_FRAME_STACK
+        self.observation_shape = (self.stack_size, *self.image_size)
+
         self.max_time_steps = config.MAX_TIME_STEPS
-        self.observation_space = Box(
-            low=0, high=255, shape=(self.stack_size, *self.image_size), dtype=np.uint8
-        )
         self.frames = deque(maxlen = config.N_FRAME_STACK)
         self.renderer = Renderer(render_mode="rgb_array")
 
-    def reset(self, seed = None, options=None):
-        super().reset(seed=seed)
-
+    def reset(self, seed = None):
         if seed is not None: 
             random.seed(seed)
 
@@ -41,14 +37,13 @@ class DanmakuEnv(gym.Env):
         return observation, info 
 
     def step(self, action):
-        reward= 0
         terminated = False
         truncated = False 
         prev_score = self.game.state.score
         for _ in range(config.N_FRAME_SKIP): 
             self.game.step(action)
             terminated = not self.game.state.alive
-            truncated = self.game.state.steps >= self.max_time_steps
+            truncated = not terminated and self.game.state.steps >= self.max_time_steps
             
             if terminated or truncated: 
                 break
@@ -73,12 +68,14 @@ class DanmakuEnv(gym.Env):
         }
 
     def image_to_gray(self, arr):
-        return Image.fromarray(arr).convert("L")
+        # L: 각 pixel을 밝기값 하나로 표현
+        return Image.fromarray(arr).convert("L")  # 다른 grayscale을 적용해 볼 수도 있음
 
     def resize_image(self, image): 
+        # 주변 pixel을 선형 보간하여 새 pixel 값 계산 (부드러워짐)
         resized = image.resize(
             self.image_size,
-            Image.Resampling.BILINEAR,
+            Image.Resampling.BILINEAR,  # NEAREST, BILINEAR, HAMMING, BICUBIC, LANCZOS, 또는 maxpool도 써볼 수 있음
         )
         return np.asarray(resized, dtype=np.uint8)
 
@@ -86,4 +83,10 @@ class DanmakuEnv(gym.Env):
     def _frame_stack(self, obs):
         self.frames.append(obs)
         return np.stack(self.frames, axis = 0)
+
+    # 환경 종료시 renderer 종료
+    def close(self):
+        if self.renderer is not None:
+            self.renderer.close()
+            self.renderer = None
 

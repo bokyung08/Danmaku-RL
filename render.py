@@ -6,19 +6,18 @@ from game import Game
 class Renderer:
     def __init__(self, render_mode="rgb_array"):
         self.render_mode = render_mode
-
-        self.canvas = pygame.Surface((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         
         pygame.font.init()
         self.font = pygame.font.SysFont(
             config.HUD_FONT_NAME, config.HUD_FONT_SIZE
         )
         
-        self.screen = None
         if render_mode == "human":
             pygame.display.init()
-            self.screen = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
+            self.canvas = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
             pygame.display.set_caption("Danmaku render test - Arrow keys")
+        else:
+            self.canvas = pygame.Surface((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 
 
     def draw_canvas(self, game: Game, view_score=True):
@@ -54,40 +53,12 @@ class Renderer:
         return image.transpose(1,0,2)  # (height, width, channel)
 
     def draw(self, game: Game, view_score=True):
+        if self.render_mode != "human": return 
+
         self.draw_canvas(game, view_score)
-        self.screen.blit(self.canvas, (0,0))
         pygame.display.flip()
 
+    def close(self):
+        if self.render_mode == "human":
+            pygame.display.quit()  # pygame은 살리고 창만 닫음
 
-def main():
-    renderer = Renderer()
-    game = Game()
-    clock = pygame.time.Clock()
-
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-        keys = pygame.key.get_pressed()
-        dx = (keys[pygame.K_RIGHT] or keys[pygame.K_d]) - (
-            keys[pygame.K_LEFT] or keys[pygame.K_a]
-        )
-        dy = (keys[pygame.K_DOWN] or keys[pygame.K_s]) - (
-            keys[pygame.K_UP] or keys[pygame.K_w]
-        )
-        if dx and dy:
-            speed = config.AGENT_DIAG_SPEED
-        else:
-            speed = config.AGENT_SPEED
-
-        game.update(dx * speed, dy * speed)
-        renderer.draw(game)
-        clock.tick(config.FPS)
-
-    pygame.quit()
-
-
-if __name__=="__main__":
-    main()

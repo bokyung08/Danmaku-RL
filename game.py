@@ -7,17 +7,15 @@ from dataclasses import dataclass, field
 @dataclass 
 class GameState: 
     agent: Agent = None
-    balls: list = field(default_factory=list)
+    # 다른 gamestate 객체가 list를 공유할 위험 있으므로 field 사용
+    balls: list = field(default_factory=list)  
     steps: int = 0
     alive: bool = True 
     score: int = 0 
 
 def _spawn_balls(balls):
     if len(balls) < config.MAX_BALL_NUM: 
-        balls.append(Ball(x = config.BALL_RADIUS,
-                          y = config.BALL_RADIUS, 
-                          vx = randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED),
-                          vy = randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED)))
+        balls.append(Ball())
 
 
 
