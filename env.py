@@ -41,7 +41,6 @@ class DanmakuEnv(gym.Env):
         return observation, info 
 
     def step(self, action):
-        reward= 0
         terminated = False
         truncated = False 
         prev_score = self.game.state.score
@@ -73,9 +72,11 @@ class DanmakuEnv(gym.Env):
         }
 
     def image_to_gray(self, arr):
+        # L: 각 pixel을 밝기값 하나로 표현
         return Image.fromarray(arr).convert("L")
 
     def resize_image(self, image): 
+        # 주변 pixel을 선형 보간하여 새 pixel 값 계산 (부드러워짐)
         resized = image.resize(
             self.image_size,
             Image.Resampling.BILINEAR,

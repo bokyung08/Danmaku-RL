@@ -14,10 +14,7 @@ class GameState:
 
 def _spawn_balls(balls):
     if len(balls) < config.MAX_BALL_NUM: 
-        balls.append(Ball(x = config.BALL_RADIUS,
-                          y = config.BALL_RADIUS, 
-                          vx = randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED),
-                          vy = randint(config.MIN_BALL_SPEED, config.MAX_BALL_SPEED)))
+        balls.append(Ball())
 
 
 
