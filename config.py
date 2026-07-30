@@ -39,6 +39,7 @@ ACTION_DOWN_RIGHT = 8
 N_FRAME_STACK = 4 # observation에 쌓을 프레임 수 -> 4장을 하나의 state 로 
 N_FRAME_SKIP = 4 # 하나의 Action 반복 횟수
 MAX_TIME_STEPS = 108000  # 30 minutes game playing
+SEED = None  # None or int, None일 경우 실행할 때마다 다른 실행 결과
 
 # HUD / 렌더링
 HUD_FONT_NAME = ""

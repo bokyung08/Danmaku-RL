@@ -57,7 +57,7 @@ def play_loop(game, renderer, clock):
         renderer.draw(game)
 
 def main():
-    game = Game()
+    game = Game(seed=config.SEED)
     renderer = Renderer(render_mode="human")
     clock = pygame.time.Clock()
     

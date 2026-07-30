@@ -5,7 +5,6 @@ from render import Renderer
 import numpy as np
 from collections import deque
 from PIL import Image
-import random 
 
 class DanmakuImgEnv: 
     def __init__(self): 
@@ -22,10 +21,7 @@ class DanmakuImgEnv:
         self.renderer = Renderer(render_mode="rgb_array")
 
     def reset(self, seed = None):
-        if seed is not None: 
-            random.seed(seed)
-
-        self.game.reset()
+        self.game.reset(seed=seed)
         self.frames.clear()
         first_obs = self._get_obs()
 
@@ -101,9 +97,7 @@ class DanmakuVecEnv:
         self.max_time_steps = config.MAX_TIME_STEPS
         
     def reset(self, seed = None):
-        if seed is not None: 
-            random.seed(seed)
-        self.game.reset()
+        self.game.reset(seed=seed)
         observation = self._get_obs()
         info = self._get_info()
         return observation, info 

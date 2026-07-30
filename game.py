@@ -1,5 +1,5 @@
 import config
-from random import randint
+import random
 from entity import Ball, Agent 
 from dataclasses import dataclass, field 
 
@@ -13,9 +13,9 @@ class GameState:
     alive: bool = True 
     score: int = 0 
 
-def _spawn_balls(balls):
+def _spawn_balls(balls, rng):
     if len(balls) < config.MAX_BALL_NUM: 
-        balls.append(Ball())
+        balls.append(Ball(rng))
 
 
 
@@ -137,11 +137,14 @@ def _move_agent(agent, action):
 
 
 class Game: 
-    def __init__(self): 
+    def __init__(self, seed=None): 
+        self.rng = random.Random(seed)
         self.state = GameState()
         self.reset()
         
-    def reset(self):
+    def reset(self, seed=None):
+        if seed is not None:
+            self.rng.seed(seed)
         state = self.state 
         state.agent = Agent(x = config.SCREEN_WIDTH//2, y = config.SCREEN_HEIGHT//2)
         state.balls = []
@@ -162,7 +165,7 @@ class Game:
                 
 
         if state.steps % config.BALL_ADD_FREQUENCY == 0:
-                    _spawn_balls(state.balls)
+                    _spawn_balls(state.balls, self.rng)
                     
         state.steps += 1
 
