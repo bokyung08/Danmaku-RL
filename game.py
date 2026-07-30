@@ -7,7 +7,8 @@ from dataclasses import dataclass, field
 @dataclass 
 class GameState: 
     agent: Agent = None
-    balls: list = field(default_factory=list)
+    # 다른 gamestate 객체가 list를 공유할 위험 있으므로 field 사용
+    balls: list = field(default_factory=list)  
     steps: int = 0
     alive: bool = True 
     score: int = 0 

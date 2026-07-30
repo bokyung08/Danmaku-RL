@@ -69,13 +69,13 @@ class DanmakuEnv:
 
     def image_to_gray(self, arr):
         # L: 각 pixel을 밝기값 하나로 표현
-        return Image.fromarray(arr).convert("L")
+        return Image.fromarray(arr).convert("L")  # 다른 grayscale을 적용해 볼 수도 있음
 
     def resize_image(self, image): 
         # 주변 pixel을 선형 보간하여 새 pixel 값 계산 (부드러워짐)
         resized = image.resize(
             self.image_size,
-            Image.Resampling.BILINEAR,
+            Image.Resampling.BILINEAR,  # NEAREST, BILINEAR, HAMMING, BICUBIC, LANCZOS, 또는 maxpool도 써볼 수 있음
         )
         return np.asarray(resized, dtype=np.uint8)
 
