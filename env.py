@@ -7,7 +7,7 @@ from collections import deque
 from PIL import Image
 import random 
 
-class DanmakuEnv: 
+class DanmakuImgEnv: 
     def __init__(self): 
         self.game = Game()
         self.action_space = range(9)
