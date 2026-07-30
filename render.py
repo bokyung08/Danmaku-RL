@@ -9,7 +9,7 @@ class Renderer:
         
         pygame.font.init()
         self.font = pygame.font.SysFont(
-            config.HUD_FONT_NAME, config.HUD_FONT_SIZE
+            " ", config.HUD_FONT_SIZE
         )
         
         if render_mode == "human":
