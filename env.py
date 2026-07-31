@@ -86,12 +86,10 @@ class DanmakuImgEnv:
             self.renderer = None
 
 class DanmakuVecEnv: 
-    AGENT_FEATURE_NUM = 4
+    AGENT_FEATURE_NUM = 2
     BALL_FEATURE_NUM = 5
 
     def __init__(self): 
-        self.agent_vx = 0.0
-        self.agent_vy = 0.0
         self.game = Game()
         self.action_space = range(9)
         self.observation_shape = (
@@ -100,8 +98,6 @@ class DanmakuVecEnv:
         self.max_time_steps = config.MAX_TIME_STEPS
         
     def reset(self, seed = None):
-        self.agent_vx = 0.0
-        self.agent_vy = 0.0
         self.game.reset(seed=seed)
         observation = self._get_obs()
         info = self._get_info()
@@ -111,18 +107,11 @@ class DanmakuVecEnv:
         terminated = False
         truncated = False 
 
-        agent = self.game.state.agent
-        prev_agent_x = agent.x
-        prev_agent_y = agent.y 
-        prev_score = self.game.state.score
-
-        self.game.step(action)
-        terminated = not self.game.state.alive
-        truncated = not terminated and (self.game.state.steps >= self.max_time_steps)
-                    
-        agent = self.game.state.agent
-        self.agent_vx = (agent.x - prev_agent_x) 
-        self.agent_vy = (agent.y - prev_agent_y)
+        for _ in range(config.N_FRAME_SKIP):
+            self.game.step(action)
+            terminated = not self.game.state.alive
+            truncated = not terminated and (self.game.state.steps >= self.max_time_steps)
+            if terminated or truncated: break
 
         reward = 1 if not terminated else 0
 
@@ -154,8 +143,6 @@ class DanmakuVecEnv:
 
         obs[0] = (2.0 * (agent.x - min_agent_x)/(max_agent_x - min_agent_x) - 1.0) 
         obs[1] = (2.0 * (agent.y - min_agent_y)/(max_agent_y - min_agent_y) - 1.0)
-        obs[2] = self.agent_vx / config.AGENT_SPEED # 에이전트 1스텝 이동량 = [-5, 5] 사이 -> 관측공간 크기에 맞추기 위해 SPEED로 나눔 
-        obs[3] = self.agent_vy / config.AGENT_SPEED
 
         sorted_balls = sorted(state.balls, key = lambda ball: ((ball.x - agent.x) ** 2 + (ball.y - agent.y) ** 2), ) # 거리 순 정규화 
         for idx, ball in enumerate(sorted_balls[:config.MAX_BALL_NUM]):  
