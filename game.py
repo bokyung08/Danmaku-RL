@@ -78,7 +78,7 @@ def _move_ball(ball, agent_prev, agent_next, agent_r):
 
     return False
 
-# frame까지 고려한 collision
+# 직선 이동에 대한 collision
 def _is_collision(agent_prev, agent_next, agent_r, ball_prev, ball_next, ball_r):
     prev_agent_x, prev_agent_y = agent_prev
     prev_ball_x, prev_ball_y = ball_prev
@@ -94,6 +94,15 @@ def _is_collision(agent_prev, agent_next, agent_r, ball_prev, ball_next, ball_r)
     # 상대속도
     vx, vy = ball_vx - agent_vx, ball_vy - agent_vy
 
+    '''
+    수식
+    previous 상대 위치를 p0, 상대 속도를 v라고 할 때
+    0<=t<=1에 대해서, ||p+tv||_2는 agent와 ball의 상대거리.
+    ||p+tv||_2^2 = R^2  
+    -> <v,v> t^2 + 2 <p,v> t + (<p,p> - R^2) = 0  <- t에 대한 2차방정식
+    a = <v,v>, b = 2 <p,v>, c = <p,p> - R^2
+    '''
+
     a = vx**2 + vy**2
     b = 2 * (px * vx + py * vy)
     c = px**2 + py**2 - R**2
@@ -104,10 +113,10 @@ def _is_collision(agent_prev, agent_next, agent_r, ball_prev, ball_next, ball_r)
 
     discriminant = b**2 - 4*a*c
 
-    if discriminant < 0: return False
+    if discriminant < 0: return False  # 실수 해가 없음 -> 충돌 없음
     else:
-        hit_t = (-b - discriminant**(1/2)) / (2*a)
-        if 0 <= hit_t <= 1: return True
+        hit_t = (-b - discriminant**(1/2)) / (2*a)  # 근의 공식
+        if 0 <= hit_t <= 1: return True  # 이번 프레임 내에서 충돌 있음
         else: return False
 
 def _move_agent(agent, action): 
