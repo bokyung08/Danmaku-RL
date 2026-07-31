@@ -35,7 +35,6 @@ class DanmakuImgEnv:
     def step(self, action):
         terminated = False
         truncated = False 
-        prev_score = self.game.state.score
         for _ in range(config.N_FRAME_SKIP): 
             self.game.step(action)
             terminated = not self.game.state.alive
@@ -43,7 +42,7 @@ class DanmakuImgEnv:
             
             if terminated or truncated: 
                 break
-        reward = self.game.state.score - prev_score
+        reward = 1 if not terminated else 0
         curr_obs = self._get_obs() 
         observation = self._frame_stack(curr_obs)
         info = self._get_info() # info return 
@@ -109,7 +108,6 @@ class DanmakuVecEnv:
         return observation, info 
 
     def step(self, action):
-        reward= 0
         terminated = False
         truncated = False 
 
@@ -126,7 +124,7 @@ class DanmakuVecEnv:
         self.agent_vx = (agent.x - prev_agent_x) 
         self.agent_vy = (agent.y - prev_agent_y)
 
-        reward = self.game.state.score - prev_score
+        reward = 1 if not terminated else 0
 
         observation = self._get_obs() 
         info = self._get_info() # info return 

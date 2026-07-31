@@ -99,7 +99,7 @@ def _is_collision(agent_prev, agent_next, agent_r, ball_prev, ball_next, ball_r)
     previous 상대 위치를 p0, 상대 속도를 v라고 할 때
     0<=t<=1에 대해서, ||p+tv||_2는 agent와 ball의 상대거리.
     ||p+tv||_2^2 = R^2  
-    -> <v,v> t^2 + 2 <p,v> t + (<p,p> - R^2) = 0  <- t에 대한 2차방정식
+    -> <v,v> t^2 + 2 <p,v> t + (<p,p> - R^2) = 0  (t에 대한 2차방정식)
     a = <v,v>, b = 2 <p,v>, c = <p,p> - R^2
     '''
 
