@@ -8,5 +8,6 @@
 !human.py
 !render.py
 !env.py
+!requirements.txt
 !test_img_env.ipynb
 !test_vec_env.ipynb
