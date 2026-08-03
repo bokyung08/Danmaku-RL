@@ -1,13 +1,14 @@
 from game import Game
-import config 
+import config
 from render import Renderer
 
 import numpy as np
 from collections import deque
 from PIL import Image
 
-class DanmakuImgEnv: 
-    def __init__(self): 
+
+class DanmakuImgEnv:
+    def __init__(self):
         self.game = Game()
         self.action_space = range(9)
         self.n_actions = len(self.action_space)
@@ -42,33 +43,26 @@ class DanmakuImgEnv:
             
             if terminated or truncated: 
                 break
-        reward = 1 if not terminated else 0
+        reward = 0.01 if not terminated else -1.0
         curr_obs = self._get_obs() 
         observation = self._frame_stack(curr_obs)
         info = self._get_info() # info return 
         
         return observation, reward, terminated, truncated, info
         
-    def _get_obs(self): # 현재 state -> RGB렌더 =-> image_to_gray -> resize_image -> return (84,84)
-        # 현재 게임 state를 render
-        image = self.renderer.get_image(self.game)  # (600,600,3)
-        grayscale_img = self.image_to_gray(image)  # (600,600)
-        resize_img = self.resize_image(grayscale_img)  # (84, 84)
-        return resize_img
-    
+    def _get_obs(self): # 현재 state -> 흑백 렌더 -> resize -> return (84,84)
+        grayscale_img = self.renderer.get_grayscale_image(self.game)  # (600,600)
+        return self.resize_image(grayscale_img)
+
     def _get_info(self):
         return {
             "score": self.game.state.score,
             "steps": self.game.state.steps
         }
 
-    def image_to_gray(self, arr):
-        # L: 각 pixel을 밝기값 하나로 표현
-        return Image.fromarray(arr).convert("L")  # 다른 grayscale을 적용해 볼 수도 있음
-
-    def resize_image(self, image): 
+    def resize_image(self, image):
         # 주변 pixel을 선형 보간하여 새 pixel 값 계산 (부드러워짐)
-        resized = image.resize(
+        resized = Image.fromarray(image).resize(
             self.image_size,
             Image.Resampling.BILINEAR,  # NEAREST, BILINEAR, HAMMING, BICUBIC, LANCZOS, 또는 maxpool도 써볼 수 있음
         )
@@ -113,7 +107,7 @@ class DanmakuVecEnv:
             truncated = not terminated and (self.game.state.steps >= self.max_time_steps)
             if terminated or truncated: break
 
-        reward = 1 if not terminated else 0
+        reward = 0.01 if not terminated else -1.0
 
         observation = self._get_obs() 
         info = self._get_info() # info return 

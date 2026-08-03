@@ -14,7 +14,7 @@ class GameState:
     score: int = 0 
 
 def _spawn_balls(balls, rng):
-    if len(balls) < config.MAX_BALL_NUM: 
+    while len(balls) < config.MAX_BALL_NUM: 
         balls.append(Ball(rng))
 
 
