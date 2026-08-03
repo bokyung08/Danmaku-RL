@@ -174,7 +174,7 @@ class Game:
                 
 
         if state.steps % config.BALL_ADD_FREQUENCY == 0:
-                    _spawn_balls(state.balls, self.rng)
+            _spawn_balls(state.balls, self.rng)
                     
         state.steps += 1
 
