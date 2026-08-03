@@ -18,14 +18,14 @@ from env import DanmakuVecEnv
 class ActorCritic(nn.Module):
     def __init__(self, state_dim, action_dim):
         super().__init__()
-        self.actor = nn.Sequential(
+        self.actor = nn.Sequential( # 정책 신경망, 각 행동의 확률(logits)
             nn.Linear(state_dim, 64),
             nn.ReLU(),
             nn.Linear(64, 64),
             nn.ReLU(),
             nn.Linear(64, action_dim),
         )
-        self.critic = nn.Sequential( 
+        self.critic = nn.Sequential(  # 상태 가치, 행동을 고르지 않고 actor 학습을 위한 baseline 역할 
             nn.Linear(state_dim, 64),
             nn.ReLU(),
             nn.Linear(64,64),
@@ -33,24 +33,27 @@ class ActorCritic(nn.Module):
             nn.Linear(64, 1)
         )
 
+        # 가중치 초기화: 가중치 행렬을 무작위 직교행렬로 채우는 초기화 방법
         for network in (self.actor, self.critic):
             for layer in network:
                 if isinstance(layer, nn.Linear):
                     nn.init.orthogonal_(layer.weight, gain = math.sqrt(2))
                     nn.init.zeros_(layer.bias) # bias = 0 
-        nn.init.orthogonal_(self.actor[-1].weight, gain = 0.01) # 가중치 행렬을 무작위 직교행렬로 채우는 초기화 방법
+        # 마지막 층만 덮어쓰기(출력층을 작은 값으로 초기화 시켜서 actor가 골고루 행동을 고르도록 함)
+        nn.init.orthogonal_(self.actor[-1].weight, gain = 0.01)
         nn.init.zeros_(self.actor[-1].bias)
         nn.init.orthogonal_(self.critic[-1].weight, gain= 0.01)
         nn.init.zeros_(self.critic[-1].bias)
 
+
     def forward(self, x):
-        logits = self.actor(x)
-        value = self.critic(x).squeeze(-1)
+        logits = self.actor(x) # 각 선택에 대한 확률 
+        value = self.critic(x).squeeze(-1) # 가치 
         return logits, value 
     
 
 
-class RolloutBuffer:
+class RolloutBuffer: # PPO는 현재 정책으로 플레이하며 경험 모은 후 그걸로 학습 
     def __init__(self):
         self.clear()
 
@@ -64,6 +67,7 @@ class RolloutBuffer:
         self.terminated = []
         self.truncated = []
 
+    # 버퍼에 추가하는 함수 
     def add(self, state, action, reward, old_log_prob, value, next_value, terminated, truncated):
         self.states.append(np.asarray(state, dtype=np.float32))
         self.actions.append(int(action))
@@ -74,9 +78,12 @@ class RolloutBuffer:
         self.terminated.append(bool(terminated))
         self.truncated.append(bool(truncated))
 
+    # 버퍼에 몇 스텝 모였는지 
     def __len__(self):
         return len(self.actions)
 
+    # GAE 계산 
+    # advantage = action 이 평균보다 얼마나 더 좋았는가 
     def compute_advantages(self, gamma, gae_lambda):
         rewards = np.asarray(self.rewards, dtype=np.float32)
         values = np.asarray(self.values, dtype=np.float32)
@@ -87,16 +94,16 @@ class RolloutBuffer:
         next_advantage = 0.0
 
         for index in range(len(self) - 1, -1, -1):
-            bootstrap_mask = 1.0 - terminated[index]
+            bootstrap_mask = 1.0 - terminated[index] # terminated 와 truncated를 구분하기 위함 
             episode_continues = (1.0 - terminated[index]) * (1.0 - truncated[index])
-            delta = rewards[index] + gamma * bootstrap_mask * next_values[index] - values[index]
-            next_advantage = delta + gamma * gae_lambda * episode_continues * next_advantage
+            delta = rewards[index] + gamma * bootstrap_mask * next_values[index] - values[index] # TD error 
+            next_advantage = delta + gamma * gae_lambda * episode_continues * next_advantage # delta 를 누적 
             advantages[index] = next_advantage
 
         returns = advantages + values
         return advantages, returns
 
-
+# 행동을 결정하는 policy 
 def policy(state, deterministic=False):
     state_tensor = torch.as_tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
     with torch.no_grad():
@@ -107,10 +114,10 @@ def policy(state, deterministic=False):
     return int(action.item()), float(log_prob.item()), float(value.item())
 
 
-def state_value(state):
+def state_value(state): # 다음 상태의 가치를 구하는 함수 
     state_tensor = torch.as_tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
     with torch.no_grad():
-        _logits, value = main_net(state_tensor)
+        _, value = main_net(state_tensor)
     return float(value.item())
 
 
