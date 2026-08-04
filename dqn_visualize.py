@@ -1,9 +1,9 @@
 import csv
 
+import cv2
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
-from PIL import Image
 
 import config
 from env import DanmakuVecEnv
@@ -97,36 +97,33 @@ def save_reward_curve(all_runs_episode_rewards, output_path, window=100, title="
     return output_path
 
 
-def save_play_gif(act_fn, output_path, seed=0, max_frames=1200, size=(240, 240)):
+def save_play_video(act_fn, output_path, seed=0, max_frames=None, size=(240, 240)):
     env = DanmakuVecEnv()
     renderer = Renderer(render_mode="rgb_array")
     observation, _ = env.reset(seed=seed)
 
-    frame_duration_ms = round(1000 * config.N_FRAME_SKIP / config.PHYSICS_FPS)
-    frames = []
+    if max_frames is None:
+        max_frames = config.MAX_TIME_STEPS // config.N_FRAME_SKIP + 1
+    fps = config.PHYSICS_FPS / config.N_FRAME_SKIP  # env.step() 1회 = 물리 프레임 N_FRAME_SKIP개 분량의 실제 시간
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    writer = cv2.VideoWriter(str(output_path), cv2.VideoWriter_fourcc(*"mp4v"), fps, size)
 
     def capture():
         rgb = renderer.get_image(env.game, view_score=True)
-        frame = Image.fromarray(rgb).resize(size, Image.Resampling.BILINEAR)
-        frames.append(frame.convert("P", palette=Image.Palette.ADAPTIVE, colors=128))
+        resized = cv2.resize(rgb, size, interpolation=cv2.INTER_LINEAR)
+        writer.write(cv2.cvtColor(resized, cv2.COLOR_RGB2BGR))
 
     capture()
-    while len(frames) < max_frames:
+    frame_count = 1
+    while frame_count < max_frames:
         action = act_fn(observation)
         observation, reward, terminated, truncated, info = env.step(action)
         capture()
+        frame_count += 1
         if terminated or truncated:
             break
 
     renderer.close()
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    frames[0].save(
-        output_path,
-        save_all=True,
-        append_images=frames[1:],
-        duration=frame_duration_ms,
-        loop=0,
-        optimize=False,
-        disposal=2,
-    )
+    writer.release()
     return output_path

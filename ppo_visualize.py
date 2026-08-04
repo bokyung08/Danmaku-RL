@@ -2,18 +2,16 @@ from __future__ import annotations
 
 import csv
 import json
-import math
-from itertools import pairwise
 from pathlib import Path
 
 import matplotlib
 
 matplotlib.use("Agg")
 
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-from PIL import Image
 
 import config
 from env import DanmakuVecEnv
@@ -153,35 +151,35 @@ def save_reward_curve(all_runs_episode_rewards, output_path, window=100, title="
     return output_path
 
 
-def save_play_gif(act_fn, output_path, seed, expected_physics_steps, max_frames=1200, size=(240, 240)):
+def save_play_video(act_fn, output_path, seed=0, max_frames=None, size=(240, 240)):
     env = DanmakuVecEnv()
     renderer = Renderer(render_mode="rgb_array")
     observation, _ = env.reset(seed=seed)
-    expected_decisions = math.ceil(expected_physics_steps / config.N_FRAME_SKIP)
-    capture_stride = max(1, math.ceil(expected_decisions / max_frames))
-    frames = []
-    captured_physics_steps = []
 
-    def capture_frame():
+    if max_frames is None:
+        max_frames = config.MAX_TIME_STEPS // config.N_FRAME_SKIP + 1
+    fps = config.PHYSICS_FPS / config.N_FRAME_SKIP  # env.step() 1회 = 물리 프레임 N_FRAME_SKIP개 분량의 실제 시간
+
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    writer = cv2.VideoWriter(str(output_path), cv2.VideoWriter_fourcc(*"mp4v"), fps, size)
+
+    def capture():
         rgb = renderer.get_image(env.game, view_score=True)
-        frame = Image.fromarray(rgb).resize(size, Image.Resampling.BILINEAR)
-        frames.append(frame.convert("P", palette=Image.Palette.ADAPTIVE, colors=128))
-        captured_physics_steps.append(int(env.game.state.steps))
+        resized = cv2.resize(rgb, size, interpolation=cv2.INTER_LINEAR)
+        writer.write(cv2.cvtColor(resized, cv2.COLOR_RGB2BGR))
 
-    capture_frame()
-    decisions = 0
-    episode_return = 0.0
+    capture()
+    frame_count = 1
     final_info = {"steps": 0, "score": 0}
     final_terminated = False
     final_truncated = False
 
-    while True:
+    while frame_count < max_frames:
         action = int(act_fn(observation))
         observation, reward, terminated, truncated, info = env.step(action)
-        decisions += 1
-        episode_return += float(reward)
-        if decisions % capture_stride == 0 or terminated or truncated:
-            capture_frame()
+        capture()
+        frame_count += 1
         if terminated or truncated:
             final_info = info
             final_terminated = terminated
@@ -189,56 +187,14 @@ def save_play_gif(act_fn, output_path, seed, expected_physics_steps, max_frames=
             break
 
     renderer.close()
-    if int(final_info["steps"]) != int(expected_physics_steps):
-        raise RuntimeError(f"GIF replay ended at {final_info['steps']} physics steps; expected {expected_physics_steps}")
-
-    frame_durations_ms = []
-    exact_elapsed_ms = 0.0
-    stored_elapsed_ms = 0
-    for current_step, next_step in pairwise(captured_physics_steps):
-        exact_elapsed_ms += 1000 * (next_step - current_step) / config.PHYSICS_FPS
-        target_stored_ms = round(exact_elapsed_ms / 10) * 10
-        duration_ms = max(10, target_stored_ms - stored_elapsed_ms)
-        frame_durations_ms.append(duration_ms)
-        stored_elapsed_ms += duration_ms
-
-    terminal_hold_ms = 10
-    for index in range(len(frame_durations_ms) - 1, -1, -1):
-        if frame_durations_ms[index] > terminal_hold_ms:
-            frame_durations_ms[index] -= terminal_hold_ms
-            break
-    else:
-        raise RuntimeError("GIF timing cannot reserve the terminal frame")
-    frame_durations_ms.append(terminal_hold_ms)
-
-    expected_duration_ms = round(1000 * int(final_info["steps"]) / config.PHYSICS_FPS / 10) * 10
-    if sum(frame_durations_ms) != expected_duration_ms:
-        raise RuntimeError("GIF duration does not match the evaluated episode")
-
-    output_path = Path(output_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    frames[0].save(
-        output_path,
-        save_all=True,
-        append_images=frames[1:],
-        duration=frame_durations_ms,
-        loop=0,
-        optimize=False,
-        disposal=2,
-    )
+    writer.release()
     return {
         "path": str(output_path),
         "seed": int(seed),
-        "frames": len(frames),
-        "capture_stride": capture_stride,
-        "expected_duration_ms": expected_duration_ms,
-        "gif_total_duration_ms": sum(frame_durations_ms),
-        "timing_error_ms": 0,
-        "decisions": decisions,
+        "frames": frame_count,
         "physics_steps": int(final_info["steps"]),
         "survival_seconds": float(final_info["steps"] / config.PHYSICS_FPS),
         "score": int(final_info["score"]),
-        "return": episode_return,
         "terminated": bool(final_terminated),
         "truncated": bool(final_truncated),
     }

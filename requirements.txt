@@ -2,3 +2,4 @@ numpy
 Pillow>=9.1.0
 pygame
 matplotlib
+opencv-python

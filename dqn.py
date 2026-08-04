@@ -64,6 +64,7 @@ def update_parameter_with_loss():
         target_q_values = rewards + gamma * next_q_values * (1.0 - dones.float())
 
     loss = F.mse_loss(q_values, target_q_values)
+    # loss = F.smooth_l1_loss(q_valuse, target_q_values)
 
     optimizer.zero_grad()
     loss.backward()
@@ -91,6 +92,16 @@ def evaluate(n_eval=20):
                 survival_seconds.append(info["steps"] / config.PHYSICS_FPS)
                 break
     return survived / n_eval, float(np.mean(survival_seconds))
+
+def distance_reward():
+    state = env.game.state
+    if len(state.balls) == 0:
+        return 0.0
+    agent = state.agent 
+    distance_min = min(((ball.x-agent.x)**2 + (ball.y-agent.y)**2) ** 0.5 - ball.r - agent.r for ball in state.balls)
+    return float(np.clip(distance_min/distance_pixels , 0.0, 1.0))
+
+
 # ------------------------------------------------------------
 # 4. 파라미터 설정
 # ------------------------------------------------------------
@@ -109,7 +120,8 @@ batch_size = 64
 learning_rate = 0.0005
 gamma = 0.99
 target_net_update_interval = 200
-
+distance_pixels = 50 # 거리가 50 이내이면 패널티 보상 
+distance_ratio = 0.1 # 기존 reward에 섞어줄 거리 패널티 비율 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -179,13 +191,19 @@ for run_id in range(n_runs):
             action = policy(state, eps)
             action_counts[action] += 1
 
+            previous_dist = distance_reward()
             next_state, reward, env_terminated, truncated, _ = env.step(action)
 
             finished = env_terminated or truncated 
 
-            learning_reward = reward
-            if env_terminated:
-                learning_reward = -1
+            next_dist = 0.0 if finished else distance_reward()
+            # learning_reward = reward
+            dist_reward = distance_ratio * (gamma * next_dist - previous_dist)
+            # if env_terminated:
+            #     learning_reward = -1
+
+            base_reward = -1 if env_terminated else reward 
+            learning_reward = base_reward + dist_reward
 
             memory.append( (state, action, learning_reward, next_state, finished) )
 
@@ -209,7 +227,7 @@ for run_id in range(n_runs):
 
         mean_loss = np.mean(losses_in_episode) if losses_in_episode else np.nan
 
-        episode_rewards.append(total_reward) #0 or 1
+        episode_rewards.append(total_reward) # 0 or 1
         episode_successes.append(success)
         episode_steps.append(used_steps)
         episode_losses.append(mean_loss)
@@ -227,12 +245,12 @@ for run_id in range(n_runs):
                 best_state_dict = {k: v.clone() for k, v in main_net.state_dict().items()}
 
         if episode % render_every == 0:
-            dqn_visualize.save_play_gif(
-                lambda s: policy(s, 0.0), save_dir / f"progress_run{run_id}_ep{episode}.gif"
+            dqn_visualize.save_play_video(
+                lambda s: policy(s, 0.0), save_dir / f"progress_run{run_id}_ep{episode}.mp4"
             )
 
         run_bar.set_postfix(
-            success=success, reward=f"{total_reward:.1f}", eps=f"{eps:.3f}",
+            success=success, balls=len(env.game.state.balls), eps=f"{eps:.3f}",
             eval=f"{latest_eval_success_rate:.2f}/{latest_eval_mean_survival:.1f}s",
         )
 
@@ -249,7 +267,7 @@ for run_id in range(n_runs):
         dqn_visualize.save_learning_curve(
             episode_rewards, episode_successes, eval_history, save_dir / f"learning_curve_run{run_id}.png"
         )
-        dqn_visualize.save_play_gif(lambda s: policy(s, 0.0), save_dir / f"best_model_run{run_id}.gif")
+        dqn_visualize.save_play_video(lambda s: policy(s, 0.0), save_dir / f"best_model_run{run_id}.mp4")
 
     all_runs_episode_rewards.append(episode_rewards)
     all_runs_episode_successes.append(episode_successes)
