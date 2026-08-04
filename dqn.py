@@ -150,7 +150,7 @@ distance_ratio = 0.1 # 기존 reward에 섞어줄 거리 패널티 비율
 truncated_reward = 10 # 커리큘럼 목표(현재 단계) 완주 시 보너스
 stall_penalty = 0.05 # 위험한데 안 움직이면 깎을 페널티
 curriculum_stages = [300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700, 3000, 3300, 3600] # 공 5개(300스텝)씩 늘려가는 MAX_TIME_STEPS 커리큘럼
-curriculum_success_threshold = 0.75 # eval success_rate가 이 이상이면 다음 단계로 승급
+curriculum_success_threshold = 0.70 # eval success_rate가 이 이상이면 다음 단계로 승급
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -241,8 +241,8 @@ for run_id in range(n_runs):
                 base_reward = truncated_reward
             else:
                 base_reward = reward
-            stall = (not moved) and (previous_dist < 1.0)
-            learning_reward = base_reward + dist_reward - (stall_penalty if stall else 0.0)
+            stall = (not moved) and (previous_dist < 1.0) # 에이전트 주위에 공이 있어 위험한 상황이었는데 + 움직이지 않았을 경우
+            learning_reward = base_reward + dist_reward - (stall_penalty if stall else 0.0) # 추가적으로 0.05 패널티 차감 
 
             memory.append( (state, action, learning_reward, next_state, env_terminated) )
 
