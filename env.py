@@ -113,7 +113,7 @@ class DanmakuVecEnv:
             truncated = not terminated and (self.game.state.steps >= self.max_time_steps)
             if terminated or truncated: break
 
-        reward = 1 if not terminated else 0
+        reward = 0.1 if not terminated else 0
 
         observation = self._get_obs() 
         info = self._get_info() # info return 

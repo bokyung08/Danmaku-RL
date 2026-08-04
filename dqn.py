@@ -198,14 +198,14 @@ for run_id in range(n_runs):
 
             next_dist = 0.0 if finished else distance_reward()
             # learning_reward = reward
-            dist_reward = distance_ratio * (gamma * next_dist - previous_dist)
+            dist_reward = distance_ratio * (gamma * next_dist - previous_dist) # potential based reward shaping 
             # if env_terminated:
             #     learning_reward = -1
 
             base_reward = -1 if env_terminated else reward 
             learning_reward = base_reward + dist_reward
 
-            memory.append( (state, action, learning_reward, next_state, finished) )
+            memory.append( (state, action, learning_reward, next_state, env_terminated) )
 
             state = next_state
             final_state = next_state
