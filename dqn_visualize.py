@@ -9,6 +9,8 @@ import config
 from env import DanmakuVecEnv
 from render import Renderer
 
+ACTION_NAMES = ("STOP", "UP", "DOWN", "LEFT", "RIGHT", "UP_LEFT", "UP_RIGHT", "DOWN_LEFT", "DOWN_RIGHT")
+
 
 def open_training_log(path):
     log_file = path.open("w", newline="", encoding="utf-8-sig")
@@ -27,6 +29,15 @@ def log_episode(writer, log_file, run_id, episode, reward, success, steps, mean_
 def save_best_model(state_dict, path):
     path.parent.mkdir(parents=True, exist_ok=True)
     torch.save(state_dict, path)
+
+
+def save_eval_summary(success_rate, mean_survival_seconds, path):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        f"success_rate: {success_rate}\nmean_survival_seconds: {mean_survival_seconds}\n",
+        encoding="utf-8",
+    )
+    return path
 
 
 def save_learning_curve(episode_rewards, episode_successes, eval_history, output_path, window=100):
@@ -90,6 +101,107 @@ def save_reward_curve(all_runs_episode_rewards, output_path, window=100, title="
     ax.set_ylabel(f"reward ({effective_window}-episode mean)")
     ax.grid(alpha=0.3)
 
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+    return output_path
+
+
+def save_score_plot(episode_scores, output_path, window=100):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    episodes = np.arange(1, len(episode_scores) + 1)
+    ax.plot(episodes, episode_scores, alpha=0.3, label="score")
+    if len(episode_scores) >= window:
+        rolling = np.convolve(episode_scores, np.ones(window) / window, mode="valid")
+        ax.plot(episodes[window - 1:], rolling, label=f"{window}-episode mean")
+    ax.set_title("Episode score")
+    ax.set_xlabel("episode")
+    ax.set_ylabel("score")
+    ax.legend()
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+    return output_path
+
+
+def save_success_rate_plot(episode_successes, eval_history, output_path, window=100):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    episodes = np.arange(1, len(episode_successes) + 1)
+    if len(episode_successes) >= window:
+        rolling = np.convolve(episode_successes, np.ones(window) / window, mode="valid")
+        ax.plot(episodes[window - 1:], rolling, label=f"{window}-episode success rate", color="tab:green")
+    if eval_history:
+        eval_episodes, eval_rates, _eval_survival = zip(*eval_history)
+        ax.plot(eval_episodes, eval_rates, marker="o", label="eval success rate", color="tab:orange")
+    ax.set_title("Success rate (3-minute survival)")
+    ax.set_xlabel("episode")
+    ax.set_ylabel("success rate")
+    ax.set_ylim(-0.05, 1.05)
+    ax.legend()
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+    return output_path
+
+
+def save_survival_time_plot(episode_survival_seconds, eval_history, output_path, window=100):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    episodes = np.arange(1, len(episode_survival_seconds) + 1)
+    ax.plot(episodes, episode_survival_seconds, alpha=0.3, label="survival seconds", color="tab:red")
+    if len(episode_survival_seconds) >= window:
+        rolling = np.convolve(episode_survival_seconds, np.ones(window) / window, mode="valid")
+        ax.plot(episodes[window - 1:], rolling, label=f"{window}-episode mean", color="darkred")
+    if eval_history:
+        eval_episodes, _eval_rates, eval_survival = zip(*eval_history)
+        ax.plot(eval_episodes, eval_survival, marker="o", label="eval mean survival", color="tab:orange")
+    ax.set_title("Survival time")
+    ax.set_xlabel("episode")
+    ax.set_ylabel("survival seconds")
+    ax.legend()
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+    return output_path
+
+
+def save_loss_plot(episode_losses, output_path, window=100):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    losses = np.asarray(episode_losses, dtype=np.float64)
+    episodes = np.arange(1, len(losses) + 1)
+    valid = np.isfinite(losses)
+    ax.plot(episodes[valid], losses[valid], alpha=0.3, label="mean_loss (per episode)")
+    if valid.sum() >= window:
+        rolling = np.convolve(losses[valid], np.ones(window) / window, mode="valid")
+        ax.plot(episodes[valid][window - 1:], rolling, label=f"{window}-episode mean")
+    ax.set_title("Training loss")
+    ax.set_xlabel("episode")
+    ax.set_ylabel("loss")
+    ax.legend()
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+    return output_path
+
+
+def save_action_distribution_plot(action_counts, output_path):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    counts = np.asarray(action_counts, dtype=np.float64)
+    names = ACTION_NAMES[:len(counts)]
+    ax.bar(names, counts, color="tab:purple")
+    ax.set_title("Action distribution")
+    ax.set_xlabel("action")
+    ax.set_ylabel("count")
+    ax.tick_params(axis="x", rotation=45)
+    ax.grid(alpha=0.3, axis="y")
     fig.tight_layout()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=150)

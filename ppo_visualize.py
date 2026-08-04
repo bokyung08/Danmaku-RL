@@ -151,6 +151,111 @@ def save_reward_curve(all_runs_episode_rewards, output_path, window=100, title="
     return output_path
 
 
+def save_score_plot(episode_history, output_path, window=100):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    scores = [record["score"] for record in episode_history]
+    episodes = np.arange(1, len(scores) + 1)
+    ax.plot(episodes, scores, alpha=0.3, label="score")
+    score_x, score_mean = _rolling_mean(scores, window)
+    if score_mean.size:
+        ax.plot(score_x, score_mean, label=f"{min(window, len(scores))}-episode mean")
+    ax.set_title("Episode score")
+    ax.set_xlabel("episode")
+    ax.set_ylabel("score")
+    ax.legend()
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+    return output_path
+
+
+def save_success_rate_plot(episode_successes, eval_history, output_path, window=100):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    success_x, success_mean = _rolling_mean(episode_successes, window)
+    if success_mean.size:
+        ax.plot(success_x, success_mean, label=f"{min(window, len(episode_successes))}-episode success rate", color="tab:green")
+    if eval_history:
+        steps = [record["global_step"] for record in eval_history]
+        ax.plot(steps, [record["completion_rate"] for record in eval_history], marker="o", label="eval completion rate", color="tab:orange")
+    ax.set_title("Success rate (3-minute survival)")
+    ax.set_xlabel("episode / environment decisions")
+    ax.set_ylabel("success rate")
+    ax.set_ylim(-0.05, 1.05)
+    ax.legend()
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+    return output_path
+
+
+def save_survival_time_plot(episode_history, eval_history, output_path, window=100):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    survival = [record["survival_seconds"] for record in episode_history]
+    episodes = np.arange(1, len(survival) + 1)
+    ax.plot(episodes, survival, alpha=0.3, label="survival seconds", color="tab:red")
+    survival_x, survival_mean = _rolling_mean(survival, window)
+    if survival_mean.size:
+        ax.plot(survival_x, survival_mean, label=f"{min(window, len(survival))}-episode mean", color="darkred")
+    if eval_history:
+        steps = [record["global_step"] for record in eval_history]
+        ax.plot(steps, [record["median_survival_seconds"] for record in eval_history], marker="o", label="eval median")
+        ax.plot(steps, [record["mean_survival_seconds"] for record in eval_history], marker="o", label="eval mean")
+    ax.set_title("Survival time")
+    ax.set_xlabel("episode / environment decisions")
+    ax.set_ylabel("seconds")
+    ax.legend()
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+    return output_path
+
+
+def save_loss_plot(update_history, output_path):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    if update_history:
+        steps = [record["global_step"] for record in update_history]
+        ax.plot(steps, [record["policy_loss"] for record in update_history], label="policy loss")
+        ax.plot(steps, [record["value_loss"] for record in update_history], label="value loss")
+    ax.set_title("Training loss")
+    ax.set_xlabel("environment decisions")
+    ax.set_ylabel("loss")
+    ax.legend()
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+    return output_path
+
+
+def save_action_distribution_plot(action_counts, output_path):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    counts = np.asarray(action_counts, dtype=np.float64)
+    names = ACTION_NAMES[:len(counts)]
+    ax.bar(names, counts, color="tab:purple")
+    ax.set_title("Action distribution")
+    ax.set_xlabel("action")
+    ax.set_ylabel("count")
+    ax.tick_params(axis="x", rotation=45)
+    ax.grid(alpha=0.3, axis="y")
+    fig.tight_layout()
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+    return output_path
+
+
 def save_play_video(act_fn, output_path, seed=0, max_frames=None, size=(240, 240)):
     env = DanmakuVecEnv()
     renderer = Renderer(render_mode="rgb_array")

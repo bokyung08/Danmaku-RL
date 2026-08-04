@@ -242,8 +242,14 @@ def evaluate(n_eval=20):
     return records, summarize_evaluation(records)
 
 
-def save_video_from_eval(path):
-    ppo_visualize.save_play_video(lambda s: policy(s, deterministic=True)[0], path, seed=1_000_000)
+def save_video_from_eval(path, seed=1_000_000):
+    ppo_visualize.save_play_video(lambda s: policy(s, deterministic=True)[0], path, seed=seed)
+
+
+def save_best_video_from_eval(path):
+    records, _summary = evaluate()
+    best_index = max(range(len(records)), key=lambda index: records[index]["survival_seconds"])
+    save_video_from_eval(path, seed=1_000_000 + best_index)
 
 
 # ------------------------------------------------------------
@@ -364,7 +370,7 @@ for run_id in range(n_runs):
         episode_rewards.append(total_reward)
         episode_successes.append(success)
         episode_steps.append(used_steps)
-        episode_history.append({"reward": total_reward, "survival_seconds": survival_seconds})
+        episode_history.append({"reward": total_reward, "score": info["score"], "survival_seconds": survival_seconds})
 
         if episode % eval_every == 0:
             _records, latest_eval_summary = evaluate()
@@ -408,7 +414,12 @@ for run_id in range(n_runs):
         ppo_visualize.save_learning_curve(
             episode_history, eval_history, update_history, save_dir / f"learning_curve_run{run_id}.png"
         )
-        save_video_from_eval(save_dir / f"best_model_run{run_id}.mp4")
+        ppo_visualize.save_score_plot(episode_history, save_dir / f"score_run{run_id}.png")
+        ppo_visualize.save_success_rate_plot(episode_successes, eval_history, save_dir / f"success_rate_run{run_id}.png")
+        ppo_visualize.save_survival_time_plot(episode_history, eval_history, save_dir / f"survival_time_run{run_id}.png")
+        ppo_visualize.save_loss_plot(update_history, save_dir / f"loss_run{run_id}.png")
+        ppo_visualize.save_action_distribution_plot(action_counts, save_dir / f"action_distribution_run{run_id}.png")
+        save_best_video_from_eval(save_dir / f"best_model_run{run_id}.mp4")
 
     all_runs_episode_rewards.append(episode_rewards)
     all_runs_episode_successes.append(episode_successes)
