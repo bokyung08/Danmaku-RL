@@ -232,6 +232,8 @@ for run_id in range(n_runs):
             moved = (agent.x != previous_agent_x) or (agent.y != previous_agent_y)
             # learning_reward = reward
             dist_reward = distance_ratio * (gamma * next_dist - previous_dist) # potential based reward shaping
+            #	공에서 멀어졌으면: next_dist > previous_dist라서 dist_reward가 양수 → 실질적으로 보너스
+		    #	공에 가까워졌으면: next_dist < previous_dist라서 dist_reward가 음수 → base_reward에 음수를 더하는 거니까 실질적으로 페널티		
             # if env_terminated:
             #     learning_reward = -1
 
