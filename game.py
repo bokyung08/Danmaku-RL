@@ -14,7 +14,7 @@ class GameState:
     score: int = 0 
 
 def _spawn_balls(balls, rng):
-    while len(balls) < config.MAX_BALL_NUM: 
+    if len(balls) < config.MAX_BALL_NUM:
         balls.append(Ball(rng))
 
 
@@ -60,14 +60,16 @@ def _move_ball(ball, agent_prev, agent_next, agent_r):
         agent_end = _lerp(agent_prev, agent_next, elapsed + dt)
 
 
-        ball.x, ball.y = ball_end
-
-        if _is_collision(
+        hit_t = _collision_time(
             agent_start, agent_end, agent_r,
             ball_start, ball_end, ball.r
-        ): 
+        )
+        if hit_t is not None:
+            # ball_end까지 다 이동시키지 않고, 실제로 닿은 지점(hit_t)에서 멈춘다.
+            ball.x, ball.y = _lerp(ball_start, ball_end, hit_t)
             return True
-        
+
+        ball.x, ball.y = ball_end
         elapsed += dt
 
         if dt == remain: break
@@ -78,8 +80,9 @@ def _move_ball(ball, agent_prev, agent_next, agent_r):
 
     return False
 
-# 직선 이동에 대한 collision
-def _is_collision(agent_prev, agent_next, agent_r, ball_prev, ball_next, ball_r):
+# 직선 이동에 대한 collision. 충돌 시 이번 sub-step 안에서 닿은 시점(hit_t, 0~1)을,
+# 충돌이 없으면 None을 반환한다.
+def _collision_time(agent_prev, agent_next, agent_r, ball_prev, ball_next, ball_r):
     prev_agent_x, prev_agent_y = agent_prev
     prev_ball_x, prev_ball_y = ball_prev
     next_agent_x, next_agent_y = agent_next
@@ -107,17 +110,17 @@ def _is_collision(agent_prev, agent_next, agent_r, ball_prev, ball_next, ball_r)
     b = 2 * (px * vx + py * vy)
     c = px**2 + py**2 - R**2
 
-    if c <= 0: return True  # frame 시작시 원 내부인가? 
-    if a == 0: return False  # 상대 위치가 그대로임. 
+    if c <= 0: return 0.0  # frame 시작시 원 내부인가?
+    if a == 0: return None  # 상대 위치가 그대로임.
 
 
     discriminant = b**2 - 4*a*c
 
-    if discriminant < 0: return False  # 실수 해가 없음 -> 충돌 없음
+    if discriminant < 0: return None  # 실수 해가 없음 -> 충돌 없음
     else:
         hit_t = (-b - discriminant**(1/2)) / (2*a)  # 근의 공식
-        if 0 <= hit_t <= 1: return True  # 이번 프레임 내에서 충돌 있음
-        else: return False
+        if 0 <= hit_t <= 1: return hit_t  # 이번 프레임 내에서 충돌 있음
+        else: return None
 
 def _move_agent(agent, action): 
     if action ==  config.ACTION_UP: 
