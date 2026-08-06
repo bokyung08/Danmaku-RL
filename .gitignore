@@ -15,3 +15,7 @@
 !ppo.py
 !dqn_visualize.py
 !ppo_visualize.py
+!save_dqn.py
+!train_dqn.py
+!record_human_play.py
+!dqn_training/

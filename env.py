@@ -157,13 +157,13 @@ class DanmakuVecEnv:
             normalized_y = (2.0 * (ball.y - min_ball_y)/(max_ball_y - min_ball_y) - 1.0)
 
             # 공의 상대 좌표 (실험을 위해 남겨둠)
-            # relative_x = (ball.x - agent.x) / config.SCREEN_WIDTH 
-            # relative_y = (ball.y - agent.y) / config.SCREEN_HEIGHT
+            relative_x = (ball.x - agent.x) / config.SCREEN_WIDTH 
+            relative_y = (ball.y - agent.y) / config.SCREEN_HEIGHT
 
             normalized_vx = ball.vx / config.MAX_BALL_SPEED
             normalized_vy = ball.vy / config.MAX_BALL_SPEED
 
-            obs[start:start+self.BALL_FEATURE_NUM] = [normalized_x, normalized_y, normalized_vx, normalized_vy, 1.0]
+            obs[start:start+self.BALL_FEATURE_NUM] = [relative_x, relative_y, normalized_vx, normalized_vy, 1.0]
 
         return np.clip(obs, -1.0, 1.0)
 

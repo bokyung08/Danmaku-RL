@@ -16,7 +16,7 @@ AGENT_SPEED = 5
 AGENT_DIAG_SPEED = AGENT_SPEED / math.sqrt(2)
 BALL_RADIUS = 5
 MIN_BALL_SPEED = 1
-MAX_BALL_SPEED = 15
+MAX_BALL_SPEED = 7
 
 MAX_BALL_NUM = 40
 SCORE_INTERVAL = PHYSICS_FPS
@@ -38,7 +38,7 @@ ACTION_DOWN_RIGHT = 8
 # Env config
 N_FRAME_STACK = 4 # observation에 쌓을 프레임 수 -> 4장을 하나의 state 로 
 N_FRAME_SKIP = 2 # 하나의 Action 반복 횟수
-MAX_TIME_STEPS = 3600  # 1 minutes game playing
+MAX_TIME_STEPS = 7200  # 1 minutes game playing
 SEED = None  # None or int, None일 경우 실행할 때마다 다른 실행 결과
 
 # HUD / 렌더링

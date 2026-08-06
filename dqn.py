@@ -72,6 +72,7 @@ def update_parameter_with_loss():
 
     optimizer.zero_grad()
     loss.backward()
+    torch.nn.utils.clip_grad_norm_(main_net.parameters(), max_norm)
     optimizer.step()
 
     return loss.item()
@@ -137,20 +138,20 @@ np.random.seed(train_seed)
 torch.manual_seed(train_seed)
 
 n_runs = 1
-render_every = 1000
-episodes = 100000
+total_steps = 20_000_000
 eps_decay = 0.9997
 eps_end = 0.0005
 batch_size = 64
 learning_rate = 0.0005
 gamma = 0.99
 target_net_update_interval = 200
+max_norm = 10 # gradient clipping norm 상한 (loss 폭주로 인한 Q-value 발산 방지)
 distance_pixels = 100 # 거리가 100 이내이면 패널티 보상
 distance_ratio = 0.1 # 기존 reward에 섞어줄 거리 패널티 비율
 truncated_reward = 10 # 커리큘럼 목표(현재 단계) 완주 시 보너스
 stall_penalty = 0.05 # 위험한데 안 움직이면 깎을 페널티
-curriculum_stages = [300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700, 3000, 3300, 3600] # 공 5개(300스텝)씩 늘려가는 MAX_TIME_STEPS 커리큘럼
-curriculum_success_threshold = 0.70 # eval success_rate가 이 이상이면 다음 단계로 승급
+curriculum_stages = [600 * i for i in range(1, 13)] # 600스텝(10초)씩 12단계로 늘려가는 MAX_TIME_STEPS 커리큘럼, 최종 7200스텝(120초, 공 40개)
+curriculum_success_threshold = 0.5 # eval success_rate가 이 이상이면 다음 단계로 승급
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -162,7 +163,8 @@ all_runs_episode_losses = []
 all_runs_eval_history = []
 all_runs_action_counts = []
 
-eval_every = 500
+eval_every_steps = 50_000
+render_every_steps = 500_000
 
 log_path = save_dir / "training_log.csv"
 log_file, log_writer = dqn_visualize.open_training_log(log_path)
@@ -188,6 +190,8 @@ for run_id in range(n_runs):
     target_net.load_state_dict(main_net.state_dict())
     optimizer = optim.Adam(main_net.parameters(), lr=learning_rate)
     global_step = 0
+    next_eval_step = eval_every_steps
+    next_render_step = render_every_steps
 
 
     # 로그
@@ -205,10 +209,12 @@ for run_id in range(n_runs):
     best_eval_score = (-1.0, -1.0)
     best_state_dict = None
 
-    run_bar = tqdm(range(1, episodes + 1), desc=f"[run {run_id}]")
+    run_bar = tqdm(total=total_steps, desc=f"[run {run_id}]", unit="step")
 
     # episode 진행
-    for episode in run_bar:
+    episode = 0
+    while global_step < total_steps:
+        episode += 1
         state, _ = env.reset(seed=(train_seed + run_id) * 1_000_000 + episode)
 
         total_reward = 0.0
@@ -252,16 +258,17 @@ for run_id in range(n_runs):
             final_state = next_state
             total_reward += reward                          # 그래프/성공률 판단은 순수 환경 보상 기준
             used_steps = movement
+            global_step += 1
+            run_bar.update(1)
 
             if len(memory) >= batch_size:
                 current_loss = update_parameter_with_loss()
                 losses_in_episode.append(current_loss)
 
-                global_step += 1
                 if global_step % target_net_update_interval == 0:
                     synchronize_target_net()
 
-            if finished:
+            if finished or global_step >= total_steps:
                 break
 
         success = 1 if truncated else 0
@@ -277,7 +284,7 @@ for run_id in range(n_runs):
 
         eps = max(eps * eps_decay, eps_end)
 
-        if episode % eval_every == 0:
+        if global_step >= next_eval_step:
             latest_eval_success_rate, latest_eval_mean_survival = evaluate(max_time_steps=env.max_time_steps)
             eval_history.append((episode, latest_eval_success_rate, latest_eval_mean_survival))
 
@@ -291,10 +298,32 @@ for run_id in range(n_runs):
                 env.max_time_steps = curriculum_stages[curriculum_index]
                 best_eval_score = (-1.0, -1.0)  # 난이도가 바뀌었으니 best 비교 기준 리셋
 
-        if episode % render_every == 0:
+            while next_eval_step <= global_step:
+                next_eval_step += eval_every_steps
+
+        if global_step >= next_render_step:
             dqn_visualize.save_play_video(
                 lambda s: policy(s, 0.0), save_dir / f"progress_run{run_id}_ep{episode}.mp4"
             )
+
+            # 학습이 중간에 끊겨도 이 시점까지의 결과가 남도록, 최종 저장과 동일한 산출물을 주기적으로 갱신
+            dqn_visualize.save_best_model(main_net.state_dict(), save_dir / f"latest_model_run{run_id}.pt")
+            if best_state_dict is not None:
+                dqn_visualize.save_best_model(best_state_dict, save_dir / f"best_model_run{run_id}.pt")
+                dqn_visualize.save_eval_summary(
+                    latest_eval_success_rate, latest_eval_mean_survival, save_dir / f"eval_summary_run{run_id}.txt"
+                )
+            dqn_visualize.save_learning_curve(
+                episode_rewards, episode_successes, eval_history, save_dir / f"learning_curve_run{run_id}.png"
+            )
+            dqn_visualize.save_score_plot(episode_scores, save_dir / f"score_run{run_id}.png")
+            dqn_visualize.save_success_rate_plot(episode_successes, eval_history, save_dir / f"success_rate_run{run_id}.png")
+            dqn_visualize.save_survival_time_plot(episode_survival_seconds, eval_history, save_dir / f"survival_time_run{run_id}.png")
+            dqn_visualize.save_loss_plot(episode_losses, save_dir / f"loss_run{run_id}.png")
+            dqn_visualize.save_action_distribution_plot(action_counts, save_dir / f"action_distribution_run{run_id}.png")
+
+            while next_render_step <= global_step:
+                next_render_step += render_every_steps
 
         run_bar.set_postfix(
             success=success, balls=len(env.game.state.balls), eps=f"{eps:.3f}",
@@ -306,6 +335,8 @@ for run_id in range(n_runs):
             log_writer, log_file, run_id, episode, total_reward, success, used_steps, mean_loss, eps,
             latest_eval_success_rate, latest_eval_mean_survival,
         )
+
+    run_bar.close()
 
     dqn_visualize.save_best_model(main_net.state_dict(), save_dir / f"latest_model_run{run_id}.pt")
 
