@@ -62,11 +62,6 @@ class QNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(hidden_dim, n_actions),
         )
-        for layer in self.network:
-            if isinstance(layer, nn.Linear):
-                nn.init.orthogonal_(layer.weight, gain=math.sqrt(2))
-                nn.init.zeros_(layer.bias)
-        nn.init.orthogonal_(self.network[-1].weight, gain=0.01)  # 출력층은 초기 Q값 스케일을 작게
 
     def forward(self, x):
         return self.network(x)
@@ -343,7 +338,7 @@ learning_starts = 2000
 batch_size = 512
 train_frequency = 8
 target_net_update_interval = 2000
-eps_decay_episodes = 10000
+eps_decay_episodes = 100000
 log_interval = 10_000
 eval_interval_episodes = 2_50
 checkpoint_interval_episodes = 5_00
