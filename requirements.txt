@@ -1,4 +1,9 @@
 numpy
-Pillow>=9.1.0
+Pillow>=10.1.0  # ImageFont.load_default(size=...)
 pygame
 matplotlib
+torch
+
+# analyze_attention.py (attention 히트맵 mp4) 전용
+imageio
+imageio-ffmpeg

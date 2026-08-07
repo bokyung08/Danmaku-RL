@@ -1,0 +1,327 @@
+pygame-ce 2.5.7 (SDL 2.32.10, Python 3.14.6)
+output: final_results\08_ddqn_img_cnn_aug_5000\DDQN_seed0_0806_211939
+random baseline: mean=9.80+-1.28 max=21
+
+[training setup]
+model   : DDQN / NatureCNN (1,688,745 trainable parameters)
+arch    : 
+            [conv1]  Conv2d(4->32,k=8,s=4) -> ReLU
+            [conv2]  Conv2d(32->64,k=4,s=2) -> ReLU
+            [conv3]  Conv2d(64->64,k=3,s=1) -> ReLU
+            [fc]     Flatten -> Linear(3136->512) -> ReLU
+            [head]   Linear(512->9)
+run     : device=cuda, seed=0, episodes=5000
+optim   : lr=0.0001, gamma=0.99, batch=32, buffer=100000, hidden=512, layer_norm=False, dueling_net=False, use_attention=False(4 heads, fusion=residual, position=relative), augmentation=True(spawn_safe), loss_fn=mse, max_grad_norm=10
+update  : learning_starts=8000, train_every=4, target_every=1000
+explore : epsilon=1->0.01, decay=0.00198
+env     : type=img, obs=(4, 84, 84), actions=9, frame_stack=4, frame_skip=4, max_steps=10800
+logging : log_every=20, eval_every=100, eval_episodes=20
+artifact: best_agent.gif + best_agent_observation.gif, seed=20000, model_fps=15, decision_frames=True
+
+ep 20/5000 steps=3310 score20=10.40 eps=0.960 loss=nan q=nan sps=4481 elapsed=0.0m
+ep 40/5000 steps=6160 score20=8.95 eps=0.921 loss=nan q=nan sps=4655 elapsed=0.0m
+ep 60/5000 steps=8989 score20=8.80 eps=0.881 loss=0.00693 q=0.003 sps=2336 elapsed=0.1m
+ep 80/5000 steps=11891 score20=9.20 eps=0.842 loss=0.00677 q=0.022 sps=1242 elapsed=0.2m
+ep 100/5000 steps=15080 score20=10.15 eps=0.802 loss=0.00739 q=0.047 sps=958 elapsed=0.3m
+  [eval] ep=100 mean=7.50+-0.87 median=6.5 max=15 P(>=120)=0.00 entropy=0.37/2.20 wnorm=15.211 srank=94/512
+ep 120/5000 steps=18265 score20=10.10 eps=0.762 loss=0.00734 q=0.071 sps=744 elapsed=0.4m
+ep 140/5000 steps=21113 score20=9.00 eps=0.723 loss=0.00722 q=0.071 sps=696 elapsed=0.5m
+ep 160/5000 steps=24120 score20=9.55 eps=0.683 loss=0.00779 q=0.071 sps=651 elapsed=0.6m
+ep 180/5000 steps=27427 score20=10.55 eps=0.644 loss=0.00797 q=0.088 sps=624 elapsed=0.7m
+ep 200/5000 steps=30069 score20=8.25 eps=0.604 loss=0.00905 q=0.101 sps=607 elapsed=0.8m
+  [eval] ep=200 mean=9.10+-1.15 median=7.5 max=18 P(>=120)=0.00 entropy=1.63/2.20 wnorm=16.232 srank=154/512
+ep 220/5000 steps=32705 score20=8.20 eps=0.564 loss=0.00854 q=0.111 sps=561 elapsed=1.0m
+ep 240/5000 steps=35965 score20=10.30 eps=0.525 loss=0.00849 q=0.120 sps=553 elapsed=1.1m
+ep 260/5000 steps=39369 score20=10.85 eps=0.485 loss=0.00927 q=0.138 sps=544 elapsed=1.2m
+ep 280/5000 steps=41269 score20=5.80 eps=0.446 loss=0.00745 q=0.148 sps=539 elapsed=1.3m
+ep 300/5000 steps=43692 score20=7.60 eps=0.406 loss=0.00987 q=0.166 sps=534 elapsed=1.4m
+  [eval] ep=300 mean=10.10+-1.38 median=9.5 max=27 P(>=120)=0.00 entropy=0.96/2.20 wnorm=17.815 srank=196/512
+ep 320/5000 steps=46093 score20=7.55 eps=0.366 loss=0.00732 q=0.185 sps=511 elapsed=1.5m
+ep 340/5000 steps=48078 score20=6.15 eps=0.327 loss=0.01260 q=0.198 sps=507 elapsed=1.6m
+ep 360/5000 steps=50043 score20=6.15 eps=0.287 loss=0.00951 q=0.216 sps=505 elapsed=1.7m
+ep 380/5000 steps=52610 score20=8.10 eps=0.248 loss=0.00976 q=0.223 sps=499 elapsed=1.8m
+ep 400/5000 steps=55673 score20=9.70 eps=0.208 loss=0.01118 q=0.242 sps=493 elapsed=1.9m
+  [eval] ep=400 mean=11.65+-1.38 median=9.0 max=23 P(>=120)=0.00 entropy=1.67/2.20 wnorm=19.033 srank=194/512
+ep 420/5000 steps=58956 score20=10.40 eps=0.168 loss=0.01057 q=0.255 sps=474 elapsed=2.1m
+ep 440/5000 steps=61487 score20=7.90 eps=0.129 loss=0.01072 q=0.286 sps=473 elapsed=2.2m
+ep 460/5000 steps=64260 score20=8.65 eps=0.089 loss=0.01276 q=0.311 sps=469 elapsed=2.3m
+ep 480/5000 steps=67170 score20=9.15 eps=0.050 loss=0.01237 q=0.314 sps=464 elapsed=2.4m
+ep 500/5000 steps=69886 score20=8.55 eps=0.010 loss=0.01060 q=0.338 sps=463 elapsed=2.5m
+  [eval] ep=500 mean=7.25+-1.20 median=6.0 max=18 P(>=120)=0.00 entropy=1.61/2.20 wnorm=20.646 srank=202/512
+ep 520/5000 steps=72708 score20=9.00 eps=0.010 loss=0.01470 q=0.341 sps=453 elapsed=2.7m
+ep 540/5000 steps=75681 score20=9.35 eps=0.010 loss=0.01225 q=0.368 sps=451 elapsed=2.8m
+ep 560/5000 steps=77597 score20=5.80 eps=0.010 loss=0.01467 q=0.381 sps=449 elapsed=2.9m
+ep 580/5000 steps=80223 score20=8.20 eps=0.010 loss=0.01080 q=0.382 sps=447 elapsed=3.0m
+ep 600/5000 steps=83436 score20=10.15 eps=0.010 loss=0.01611 q=0.393 sps=442 elapsed=3.1m
+  [eval] ep=600 mean=12.15+-1.26 median=11.0 max=22 P(>=120)=0.00 entropy=1.42/2.20 wnorm=22.097 srank=212/512
+ep 620/5000 steps=86083 score20=8.40 eps=0.010 loss=0.01138 q=0.403 sps=433 elapsed=3.3m
+ep 640/5000 steps=89145 score20=9.80 eps=0.010 loss=0.01565 q=0.427 sps=433 elapsed=3.4m
+ep 660/5000 steps=92140 score20=9.50 eps=0.010 loss=0.01315 q=0.425 sps=431 elapsed=3.6m
+ep 680/5000 steps=94910 score20=8.65 eps=0.010 loss=0.01182 q=0.417 sps=429 elapsed=3.7m
+ep 700/5000 steps=97454 score20=7.95 eps=0.010 loss=0.01669 q=0.425 sps=427 elapsed=3.8m
+  [eval] ep=700 mean=8.25+-1.29 median=7.0 max=23 P(>=120)=0.00 entropy=1.52/2.20 wnorm=23.438 srank=213/512
+ep 720/5000 steps=100340 score20=9.15 eps=0.010 loss=0.01241 q=0.435 sps=422 elapsed=4.0m
+ep 740/5000 steps=102979 score20=8.25 eps=0.010 loss=0.01551 q=0.476 sps=421 elapsed=4.1m
+ep 760/5000 steps=106087 score20=9.70 eps=0.010 loss=0.01655 q=0.496 sps=420 elapsed=4.2m
+ep 780/5000 steps=108765 score20=8.40 eps=0.010 loss=0.01332 q=0.527 sps=420 elapsed=4.3m
+ep 800/5000 steps=112327 score20=11.30 eps=0.010 loss=0.01774 q=0.544 sps=420 elapsed=4.5m
+  [eval] ep=800 mean=10.90+-1.45 median=10.5 max=25 P(>=120)=0.00 entropy=1.87/2.20 wnorm=25.082 srank=218/512
+ep 820/5000 steps=114558 score20=6.90 eps=0.010 loss=0.01658 q=0.542 sps=415 elapsed=4.6m
+ep 840/5000 steps=118057 score20=11.15 eps=0.010 loss=0.01640 q=0.575 sps=414 elapsed=4.7m
+ep 860/5000 steps=120635 score20=8.15 eps=0.010 loss=0.01869 q=0.594 sps=414 elapsed=4.9m
+ep 880/5000 steps=123384 score20=8.65 eps=0.010 loss=0.01885 q=0.630 sps=414 elapsed=5.0m
+ep 900/5000 steps=126101 score20=8.60 eps=0.010 loss=0.02241 q=0.653 sps=414 elapsed=5.1m
+  [eval] ep=900 mean=8.10+-1.07 median=7.0 max=17 P(>=120)=0.00 entropy=1.84/2.20 wnorm=26.272 srank=215/512
+ep 920/5000 steps=127949 score20=5.55 eps=0.010 loss=0.01980 q=0.637 sps=411 elapsed=5.2m
+ep 940/5000 steps=131130 score20=10.15 eps=0.010 loss=0.01636 q=0.609 sps=409 elapsed=5.3m
+ep 960/5000 steps=133657 score20=8.00 eps=0.010 loss=0.01969 q=0.573 sps=409 elapsed=5.5m
+ep 980/5000 steps=136268 score20=8.25 eps=0.010 loss=0.01547 q=0.542 sps=409 elapsed=5.6m
+ep 1000/5000 steps=139527 score20=10.25 eps=0.010 loss=0.01573 q=0.535 sps=408 elapsed=5.7m
+  [eval] ep=1000 mean=11.50+-1.82 median=9.0 max=33 P(>=120)=0.00 entropy=1.55/2.20 wnorm=26.990 srank=219/512
+ep 1020/5000 steps=143095 score20=11.40 eps=0.010 loss=0.01758 q=0.549 sps=404 elapsed=5.9m
+ep 1040/5000 steps=145329 score20=6.85 eps=0.010 loss=0.01856 q=0.592 sps=404 elapsed=6.0m
+ep 1060/5000 steps=148469 score20=10.05 eps=0.010 loss=0.01763 q=0.589 sps=403 elapsed=6.1m
+ep 1080/5000 steps=150971 score20=7.80 eps=0.010 loss=0.01941 q=0.573 sps=402 elapsed=6.3m
+ep 1100/5000 steps=153943 score20=9.45 eps=0.010 loss=0.01531 q=0.498 sps=401 elapsed=6.4m
+  [eval] ep=1100 mean=7.15+-1.02 median=6.0 max=18 P(>=120)=0.00 entropy=1.98/2.20 wnorm=27.965 srank=222/512
+ep 1120/5000 steps=156799 score20=9.00 eps=0.010 loss=0.01613 q=0.516 sps=398 elapsed=6.6m
+ep 1140/5000 steps=160014 score20=10.20 eps=0.010 loss=0.01656 q=0.533 sps=398 elapsed=6.7m
+ep 1160/5000 steps=162715 score20=8.50 eps=0.010 loss=0.01502 q=0.530 sps=397 elapsed=6.8m
+ep 1180/5000 steps=165900 score20=10.15 eps=0.010 loss=0.01696 q=0.505 sps=396 elapsed=7.0m
+ep 1200/5000 steps=168601 score20=8.60 eps=0.010 loss=0.01533 q=0.502 sps=394 elapsed=7.1m
+  [eval] ep=1200 mean=8.85+-1.34 median=8.0 max=22 P(>=120)=0.00 entropy=1.64/2.20 wnorm=29.025 srank=228/512
+ep 1220/5000 steps=171685 score20=9.75 eps=0.010 loss=0.01361 q=0.470 sps=391 elapsed=7.3m
+ep 1240/5000 steps=175089 score20=10.90 eps=0.010 loss=0.01609 q=0.499 sps=391 elapsed=7.5m
+ep 1260/5000 steps=177417 score20=7.30 eps=0.010 loss=0.01856 q=0.523 sps=390 elapsed=7.6m
+ep 1280/5000 steps=179717 score20=7.10 eps=0.010 loss=0.01484 q=0.517 sps=391 elapsed=7.7m
+ep 1300/5000 steps=182746 score20=9.60 eps=0.010 loss=0.01807 q=0.557 sps=390 elapsed=7.8m
+  [eval] ep=1300 mean=8.60+-1.23 median=8.0 max=17 P(>=120)=0.00 entropy=1.81/2.20 wnorm=30.247 srank=227/512
+ep 1320/5000 steps=185945 score20=10.05 eps=0.010 loss=0.01456 q=0.556 sps=388 elapsed=8.0m
+ep 1340/5000 steps=189041 score20=9.85 eps=0.010 loss=0.01529 q=0.519 sps=387 elapsed=8.1m
+ep 1360/5000 steps=192072 score20=9.65 eps=0.010 loss=0.01665 q=0.575 sps=387 elapsed=8.3m
+ep 1380/5000 steps=194959 score20=9.10 eps=0.010 loss=0.01749 q=0.570 sps=388 elapsed=8.4m
+ep 1400/5000 steps=198271 score20=10.45 eps=0.010 loss=0.01693 q=0.593 sps=388 elapsed=8.5m
+  [eval] ep=1400 mean=10.60+-1.49 median=10.0 max=31 P(>=120)=0.00 entropy=1.81/2.20 wnorm=31.281 srank=229/512
+ep 1420/5000 steps=201419 score20=9.95 eps=0.010 loss=0.01736 q=0.597 sps=386 elapsed=8.7m
+ep 1440/5000 steps=204090 score20=8.35 eps=0.010 loss=0.01775 q=0.600 sps=386 elapsed=8.8m
+ep 1460/5000 steps=207281 score20=10.15 eps=0.010 loss=0.01628 q=0.623 sps=387 elapsed=8.9m
+ep 1480/5000 steps=209565 score20=7.15 eps=0.010 loss=0.02002 q=0.631 sps=387 elapsed=9.0m
+ep 1500/5000 steps=212470 score20=9.10 eps=0.010 loss=0.01708 q=0.635 sps=387 elapsed=9.1m
+  [eval] ep=1500 mean=9.00+-1.52 median=8.0 max=33 P(>=120)=0.00 entropy=1.08/2.20 wnorm=32.037 srank=226/512
+ep 1520/5000 steps=215895 score20=10.90 eps=0.010 loss=0.01788 q=0.606 sps=385 elapsed=9.3m
+ep 1540/5000 steps=218418 score20=7.95 eps=0.010 loss=0.01627 q=0.606 sps=386 elapsed=9.4m
+ep 1560/5000 steps=221513 score20=9.80 eps=0.010 loss=0.01712 q=0.616 sps=386 elapsed=9.6m
+ep 1580/5000 steps=225159 score20=11.55 eps=0.010 loss=0.01719 q=0.645 sps=386 elapsed=9.7m
+ep 1600/5000 steps=227868 score20=8.45 eps=0.010 loss=0.01898 q=0.635 sps=386 elapsed=9.8m
+  [eval] ep=1600 mean=8.45+-1.19 median=8.0 max=23 P(>=120)=0.00 entropy=1.95/2.20 wnorm=33.090 srank=225/512
+ep 1620/5000 steps=230772 score20=9.10 eps=0.010 loss=0.01645 q=0.645 sps=384 elapsed=10.0m
+ep 1640/5000 steps=233736 score20=9.35 eps=0.010 loss=0.01969 q=0.629 sps=384 elapsed=10.1m
+ep 1660/5000 steps=236464 score20=8.55 eps=0.010 loss=0.01989 q=0.612 sps=384 elapsed=10.3m
+ep 1680/5000 steps=239022 score20=8.05 eps=0.010 loss=0.01597 q=0.594 sps=383 elapsed=10.4m
+ep 1700/5000 steps=242947 score20=12.55 eps=0.010 loss=0.01785 q=0.571 sps=382 elapsed=10.6m
+  [eval] ep=1700 mean=7.85+-1.62 median=6.0 max=28 P(>=120)=0.00 entropy=1.57/2.20 wnorm=34.184 srank=231/512
+ep 1720/5000 steps=246359 score20=10.85 eps=0.010 loss=0.01639 q=0.593 sps=380 elapsed=10.8m
+ep 1740/5000 steps=249167 score20=8.75 eps=0.010 loss=0.01549 q=0.593 sps=380 elapsed=10.9m
+ep 1760/5000 steps=252243 score20=9.75 eps=0.010 loss=0.01681 q=0.610 sps=380 elapsed=11.1m
+ep 1780/5000 steps=255617 score20=10.80 eps=0.010 loss=0.01919 q=0.599 sps=379 elapsed=11.2m
+ep 1800/5000 steps=258877 score20=10.45 eps=0.010 loss=0.01713 q=0.581 sps=379 elapsed=11.4m
+  [eval] ep=1800 mean=10.55+-1.57 median=8.0 max=25 P(>=120)=0.00 entropy=2.05/2.20 wnorm=35.240 srank=232/512
+ep 1820/5000 steps=262318 score20=10.95 eps=0.010 loss=0.01552 q=0.610 sps=378 elapsed=11.6m
+ep 1840/5000 steps=265929 score20=11.45 eps=0.010 loss=0.01491 q=0.629 sps=378 elapsed=11.7m
+ep 1860/5000 steps=268541 score20=8.15 eps=0.010 loss=0.01790 q=0.632 sps=378 elapsed=11.8m
+ep 1880/5000 steps=271913 score20=10.75 eps=0.010 loss=0.01610 q=0.639 sps=378 elapsed=12.0m
+ep 1900/5000 steps=274649 score20=8.55 eps=0.010 loss=0.01766 q=0.661 sps=378 elapsed=12.1m
+  [eval] ep=1900 mean=10.70+-1.21 median=11.0 max=20 P(>=120)=0.00 entropy=1.46/2.20 wnorm=36.353 srank=233/512
+ep 1920/5000 steps=277854 score20=10.30 eps=0.010 loss=0.01601 q=0.665 sps=376 elapsed=12.3m
+ep 1940/5000 steps=280883 score20=9.65 eps=0.010 loss=0.01711 q=0.705 sps=376 elapsed=12.4m
+ep 1960/5000 steps=284404 score20=11.20 eps=0.010 loss=0.02158 q=0.739 sps=376 elapsed=12.6m
+ep 1980/5000 steps=288218 score20=12.25 eps=0.010 loss=0.01810 q=0.797 sps=376 elapsed=12.8m
+ep 2000/5000 steps=291876 score20=11.70 eps=0.010 loss=0.02070 q=0.838 sps=376 elapsed=12.9m
+  [eval] ep=2000 mean=10.95+-1.22 median=10.5 max=25 P(>=120)=0.00 entropy=1.92/2.20 wnorm=37.467 srank=229/512
+ep 2020/5000 steps=294835 score20=9.50 eps=0.010 loss=0.01806 q=0.841 sps=375 elapsed=13.1m
+ep 2040/5000 steps=298571 score20=11.95 eps=0.010 loss=0.02299 q=0.867 sps=375 elapsed=13.3m
+ep 2060/5000 steps=301468 score20=9.15 eps=0.010 loss=0.02546 q=0.885 sps=375 elapsed=13.4m
+ep 2080/5000 steps=304956 score20=11.00 eps=0.010 loss=0.02238 q=0.902 sps=374 elapsed=13.6m
+ep 2100/5000 steps=308888 score20=12.60 eps=0.010 loss=0.02146 q=0.887 sps=374 elapsed=13.8m
+  [eval] ep=2100 mean=8.95+-1.31 median=8.5 max=25 P(>=120)=0.00 entropy=1.86/2.20 wnorm=38.619 srank=232/512
+ep 2120/5000 steps=311556 score20=8.35 eps=0.010 loss=0.02210 q=0.921 sps=373 elapsed=13.9m
+ep 2140/5000 steps=315192 score20=11.60 eps=0.010 loss=0.02226 q=0.959 sps=373 elapsed=14.1m
+ep 2160/5000 steps=318498 score20=10.45 eps=0.010 loss=0.02091 q=0.966 sps=372 elapsed=14.3m
+ep 2180/5000 steps=322335 score20=12.20 eps=0.010 loss=0.02421 q=1.009 sps=372 elapsed=14.4m
+ep 2200/5000 steps=324861 score20=7.90 eps=0.010 loss=0.02470 q=1.012 sps=372 elapsed=14.5m
+  [eval] ep=2200 mean=13.30+-1.24 median=12.0 max=24 P(>=120)=0.00 entropy=1.84/2.20 wnorm=39.869 srank=230/512
+ep 2220/5000 steps=328335 score20=11.10 eps=0.010 loss=0.02088 q=1.033 sps=371 elapsed=14.7m
+ep 2240/5000 steps=331278 score20=9.15 eps=0.010 loss=0.02122 q=1.054 sps=371 elapsed=14.9m
+ep 2260/5000 steps=334974 score20=11.80 eps=0.010 loss=0.02331 q=1.054 sps=371 elapsed=15.0m
+ep 2280/5000 steps=338479 score20=11.20 eps=0.010 loss=0.01911 q=1.013 sps=372 elapsed=15.2m
+ep 2300/5000 steps=341469 score20=9.45 eps=0.010 loss=0.02366 q=1.016 sps=371 elapsed=15.3m
+  [eval] ep=2300 mean=11.60+-1.29 median=11.0 max=24 P(>=120)=0.00 entropy=1.62/2.20 wnorm=40.956 srank=229/512
+ep 2320/5000 steps=344444 score20=9.30 eps=0.010 loss=0.02021 q=1.030 sps=370 elapsed=15.5m
+ep 2340/5000 steps=347307 score20=9.00 eps=0.010 loss=0.02050 q=0.998 sps=370 elapsed=15.6m
+ep 2360/5000 steps=350424 score20=9.85 eps=0.010 loss=0.02501 q=0.997 sps=370 elapsed=15.8m
+ep 2380/5000 steps=353592 score20=10.05 eps=0.010 loss=0.02193 q=0.999 sps=370 elapsed=15.9m
+ep 2400/5000 steps=357271 score20=11.80 eps=0.010 loss=0.02573 q=1.020 sps=370 elapsed=16.1m
+  [eval] ep=2400 mean=8.30+-1.16 median=7.0 max=17 P(>=120)=0.00 entropy=1.76/2.20 wnorm=41.866 srank=229/512
+ep 2420/5000 steps=360627 score20=10.80 eps=0.010 loss=0.02210 q=1.023 sps=369 elapsed=16.3m
+ep 2440/5000 steps=364624 score20=12.80 eps=0.010 loss=0.02022 q=1.026 sps=369 elapsed=16.5m
+ep 2460/5000 steps=367646 score20=9.60 eps=0.010 loss=0.02152 q=1.004 sps=368 elapsed=16.6m
+ep 2480/5000 steps=371286 score20=11.55 eps=0.010 loss=0.02107 q=0.961 sps=368 elapsed=16.8m
+ep 2500/5000 steps=373959 score20=8.50 eps=0.010 loss=0.02146 q=0.939 sps=368 elapsed=17.0m
+  [eval] ep=2500 mean=14.45+-1.13 median=14.0 max=27 P(>=120)=0.00 entropy=1.71/2.20 wnorm=42.674 srank=230/512
+ep 2520/5000 steps=377529 score20=11.40 eps=0.010 loss=0.02083 q=0.914 sps=366 elapsed=17.2m
+ep 2540/5000 steps=381184 score20=11.65 eps=0.010 loss=0.02010 q=0.905 sps=366 elapsed=17.4m
+ep 2560/5000 steps=384233 score20=9.60 eps=0.010 loss=0.02023 q=0.853 sps=366 elapsed=17.5m
+ep 2580/5000 steps=387572 score20=10.55 eps=0.010 loss=0.01835 q=0.801 sps=365 elapsed=17.7m
+ep 2600/5000 steps=391198 score20=11.60 eps=0.010 loss=0.01709 q=0.754 sps=365 elapsed=17.8m
+  [eval] ep=2600 mean=12.85+-1.42 median=10.5 max=23 P(>=120)=0.00 entropy=2.08/2.20 wnorm=43.573 srank=232/512
+ep 2620/5000 steps=394945 score20=12.10 eps=0.010 loss=0.01700 q=0.726 sps=365 elapsed=18.1m
+ep 2640/5000 steps=398232 score20=10.45 eps=0.010 loss=0.01530 q=0.712 sps=365 elapsed=18.2m
+ep 2660/5000 steps=401929 score20=11.80 eps=0.010 loss=0.01491 q=0.682 sps=365 elapsed=18.4m
+ep 2680/5000 steps=405842 score20=12.50 eps=0.010 loss=0.01525 q=0.669 sps=365 elapsed=18.5m
+ep 2700/5000 steps=409087 score20=10.40 eps=0.010 loss=0.01487 q=0.688 sps=365 elapsed=18.7m
+  [eval] ep=2700 mean=10.35+-1.05 median=10.5 max=20 P(>=120)=0.00 entropy=1.74/2.20 wnorm=44.415 srank=233/512
+ep 2720/5000 steps=412152 score20=9.75 eps=0.010 loss=0.01484 q=0.688 sps=364 elapsed=18.9m
+ep 2740/5000 steps=415641 score20=11.15 eps=0.010 loss=0.01319 q=0.698 sps=364 elapsed=19.0m
+ep 2760/5000 steps=419190 score20=11.35 eps=0.010 loss=0.01865 q=0.725 sps=364 elapsed=19.2m
+ep 2780/5000 steps=422315 score20=9.95 eps=0.010 loss=0.01598 q=0.698 sps=364 elapsed=19.3m
+ep 2800/5000 steps=426899 score20=14.80 eps=0.010 loss=0.01961 q=0.701 sps=364 elapsed=19.5m
+  [eval] ep=2800 mean=8.85+-0.99 median=9.5 max=21 P(>=120)=0.00 entropy=1.59/2.20 wnorm=45.555 srank=236/512
+ep 2820/5000 steps=430268 score20=10.70 eps=0.010 loss=0.01514 q=0.671 sps=364 elapsed=19.7m
+ep 2840/5000 steps=434123 score20=12.35 eps=0.010 loss=0.01456 q=0.666 sps=364 elapsed=19.9m
+ep 2860/5000 steps=437740 score20=11.55 eps=0.010 loss=0.01529 q=0.669 sps=364 elapsed=20.0m
+ep 2880/5000 steps=441824 score20=13.20 eps=0.010 loss=0.01366 q=0.661 sps=365 elapsed=20.2m
+ep 2900/5000 steps=444727 score20=9.25 eps=0.010 loss=0.01480 q=0.648 sps=365 elapsed=20.3m
+  [eval] ep=2900 mean=12.40+-1.47 median=12.0 max=23 P(>=120)=0.00 entropy=1.76/2.20 wnorm=46.479 srank=238/512
+ep 2920/5000 steps=448873 score20=13.35 eps=0.010 loss=0.01441 q=0.676 sps=364 elapsed=20.5m
+ep 2940/5000 steps=452336 score20=11.10 eps=0.010 loss=0.01250 q=0.698 sps=365 elapsed=20.7m
+ep 2960/5000 steps=456282 score20=12.60 eps=0.010 loss=0.01715 q=0.703 sps=365 elapsed=20.8m
+ep 2980/5000 steps=460329 score20=13.05 eps=0.010 loss=0.01579 q=0.719 sps=365 elapsed=21.0m
+ep 3000/5000 steps=463778 score20=10.95 eps=0.010 loss=0.01557 q=0.716 sps=366 elapsed=21.1m
+  [eval] ep=3000 mean=11.55+-1.37 median=10.5 max=28 P(>=120)=0.00 entropy=1.98/2.20 wnorm=47.710 srank=236/512
+ep 3020/5000 steps=467542 score20=12.15 eps=0.010 loss=0.01715 q=0.734 sps=365 elapsed=21.4m
+ep 3040/5000 steps=470886 score20=10.65 eps=0.010 loss=0.01722 q=0.761 sps=365 elapsed=21.5m
+ep 3060/5000 steps=474389 score20=11.10 eps=0.010 loss=0.01687 q=0.761 sps=365 elapsed=21.7m
+ep 3080/5000 steps=477874 score20=11.15 eps=0.010 loss=0.01613 q=0.793 sps=365 elapsed=21.8m
+ep 3100/5000 steps=481397 score20=11.35 eps=0.010 loss=0.01663 q=0.791 sps=365 elapsed=22.0m
+  [eval] ep=3100 mean=9.70+-0.90 median=9.0 max=20 P(>=120)=0.00 entropy=1.98/2.20 wnorm=48.978 srank=237/512
+ep 3120/5000 steps=484587 score20=10.15 eps=0.010 loss=0.01570 q=0.779 sps=365 elapsed=22.1m
+ep 3140/5000 steps=488145 score20=11.35 eps=0.010 loss=0.01633 q=0.798 sps=365 elapsed=22.3m
+ep 3160/5000 steps=491978 score20=12.30 eps=0.010 loss=0.01568 q=0.826 sps=364 elapsed=22.5m
+ep 3180/5000 steps=494356 score20=7.30 eps=0.010 loss=0.02035 q=0.849 sps=364 elapsed=22.6m
+ep 3200/5000 steps=498679 score20=13.95 eps=0.010 loss=0.01887 q=0.844 sps=364 elapsed=22.8m
+  [eval] ep=3200 mean=11.70+-1.47 median=11.5 max=24 P(>=120)=0.00 entropy=1.42/2.20 wnorm=50.159 srank=239/512
+ep 3220/5000 steps=502233 score20=11.30 eps=0.010 loss=0.01736 q=0.815 sps=364 elapsed=23.0m
+ep 3240/5000 steps=505639 score20=10.95 eps=0.010 loss=0.01769 q=0.829 sps=364 elapsed=23.2m
+ep 3260/5000 steps=509334 score20=11.70 eps=0.010 loss=0.01623 q=0.910 sps=364 elapsed=23.3m
+ep 3280/5000 steps=513537 score20=13.55 eps=0.010 loss=0.01919 q=0.925 sps=364 elapsed=23.5m
+ep 3300/5000 steps=516649 score20=9.85 eps=0.010 loss=0.02039 q=0.896 sps=364 elapsed=23.7m
+  [eval] ep=3300 mean=9.50+-1.23 median=8.5 max=20 P(>=120)=0.00 entropy=1.64/2.20 wnorm=51.375 srank=237/512
+ep 3320/5000 steps=520574 score20=12.65 eps=0.010 loss=0.01958 q=0.940 sps=363 elapsed=23.9m
+ep 3340/5000 steps=524009 score20=10.95 eps=0.010 loss=0.01956 q=0.990 sps=363 elapsed=24.1m
+ep 3360/5000 steps=527759 score20=11.85 eps=0.010 loss=0.02447 q=1.019 sps=364 elapsed=24.2m
+ep 3380/5000 steps=530758 score20=9.45 eps=0.010 loss=0.01997 q=1.015 sps=364 elapsed=24.3m
+ep 3400/5000 steps=533902 score20=9.90 eps=0.010 loss=0.02306 q=1.017 sps=364 elapsed=24.4m
+  [eval] ep=3400 mean=11.10+-1.55 median=9.5 max=24 P(>=120)=0.00 entropy=1.76/2.20 wnorm=52.641 srank=235/512
+ep 3420/5000 steps=537737 score20=12.25 eps=0.010 loss=0.02322 q=0.992 sps=364 elapsed=24.7m
+ep 3440/5000 steps=541395 score20=11.65 eps=0.010 loss=0.02095 q=0.990 sps=364 elapsed=24.8m
+ep 3460/5000 steps=545665 score20=13.65 eps=0.010 loss=0.02120 q=0.961 sps=363 elapsed=25.0m
+ep 3480/5000 steps=549275 score20=11.55 eps=0.010 loss=0.01940 q=0.971 sps=363 elapsed=25.2m
+ep 3500/5000 steps=552417 score20=9.85 eps=0.010 loss=0.02050 q=0.974 sps=363 elapsed=25.4m
+  [eval] ep=3500 mean=15.35+-1.36 median=15.0 max=28 P(>=120)=0.00 entropy=2.07/2.20 wnorm=54.023 srank=237/512
+ep 3520/5000 steps=555720 score20=10.45 eps=0.010 loss=0.02102 q=1.012 sps=362 elapsed=25.6m
+ep 3540/5000 steps=558653 score20=9.20 eps=0.010 loss=0.02120 q=0.996 sps=362 elapsed=25.7m
+ep 3560/5000 steps=561948 score20=10.55 eps=0.010 loss=0.02215 q=0.997 sps=362 elapsed=25.9m
+ep 3580/5000 steps=565250 score20=10.45 eps=0.010 loss=0.02047 q=0.986 sps=362 elapsed=26.0m
+ep 3600/5000 steps=568737 score20=11.15 eps=0.010 loss=0.02089 q=0.974 sps=362 elapsed=26.2m
+  [eval] ep=3600 mean=10.90+-1.69 median=10.5 max=29 P(>=120)=0.00 entropy=1.92/2.20 wnorm=55.027 srank=239/512
+ep 3620/5000 steps=571847 score20=9.85 eps=0.010 loss=0.02225 q=0.923 sps=362 elapsed=26.3m
+ep 3640/5000 steps=575050 score20=10.10 eps=0.010 loss=0.01851 q=0.916 sps=362 elapsed=26.5m
+ep 3660/5000 steps=578541 score20=11.15 eps=0.010 loss=0.02027 q=0.940 sps=362 elapsed=26.6m
+ep 3680/5000 steps=582208 score20=11.70 eps=0.010 loss=0.01928 q=0.955 sps=362 elapsed=26.8m
+ep 3700/5000 steps=586158 score20=12.65 eps=0.010 loss=0.02040 q=0.986 sps=363 elapsed=26.9m
+  [eval] ep=3700 mean=12.80+-1.18 median=14.0 max=25 P(>=120)=0.00 entropy=2.02/2.20 wnorm=56.165 srank=237/512
+ep 3720/5000 steps=589185 score20=9.70 eps=0.010 loss=0.01880 q=1.013 sps=362 elapsed=27.1m
+ep 3740/5000 steps=592091 score20=9.20 eps=0.010 loss=0.02257 q=1.001 sps=362 elapsed=27.3m
+ep 3760/5000 steps=596008 score20=12.50 eps=0.010 loss=0.02388 q=1.042 sps=362 elapsed=27.4m
+ep 3780/5000 steps=599040 score20=9.60 eps=0.010 loss=0.02323 q=1.079 sps=362 elapsed=27.6m
+ep 3800/5000 steps=601962 score20=9.20 eps=0.010 loss=0.02341 q=1.072 sps=362 elapsed=27.7m
+  [eval] ep=3800 mean=14.55+-1.59 median=13.5 max=33 P(>=120)=0.00 entropy=2.01/2.20 wnorm=57.195 srank=237/512
+ep 3820/5000 steps=606134 score20=13.40 eps=0.010 loss=0.02293 q=1.053 sps=362 elapsed=27.9m
+ep 3840/5000 steps=609737 score20=11.55 eps=0.010 loss=0.02167 q=1.064 sps=362 elapsed=28.1m
+ep 3860/5000 steps=612887 score20=9.90 eps=0.010 loss=0.02404 q=1.040 sps=362 elapsed=28.2m
+ep 3880/5000 steps=616090 score20=10.10 eps=0.010 loss=0.01823 q=1.034 sps=362 elapsed=28.4m
+ep 3900/5000 steps=620366 score20=13.80 eps=0.010 loss=0.02208 q=1.044 sps=362 elapsed=28.6m
+  [eval] ep=3900 mean=11.50+-0.94 median=10.0 max=20 P(>=120)=0.00 entropy=1.88/2.20 wnorm=58.363 srank=238/512
+ep 3920/5000 steps=623843 score20=11.10 eps=0.010 loss=0.02220 q=1.085 sps=361 elapsed=28.8m
+ep 3940/5000 steps=627701 score20=12.20 eps=0.010 loss=0.02371 q=1.141 sps=362 elapsed=28.9m
+ep 3960/5000 steps=631244 score20=11.30 eps=0.010 loss=0.02763 q=1.159 sps=362 elapsed=29.1m
+ep 3980/5000 steps=634660 score20=10.85 eps=0.010 loss=0.02321 q=1.175 sps=362 elapsed=29.2m
+ep 4000/5000 steps=638788 score20=13.15 eps=0.010 loss=0.02377 q=1.151 sps=362 elapsed=29.4m
+  [eval] ep=4000 mean=11.75+-1.86 median=8.5 max=37 P(>=120)=0.00 entropy=1.78/2.20 wnorm=59.669 srank=239/512
+ep 4020/5000 steps=643582 score20=15.40 eps=0.010 loss=0.02205 q=1.104 sps=362 elapsed=29.7m
+ep 4040/5000 steps=647448 score20=12.45 eps=0.010 loss=0.02403 q=1.064 sps=362 elapsed=29.8m
+ep 4060/5000 steps=650727 score20=10.35 eps=0.010 loss=0.02034 q=1.072 sps=362 elapsed=29.9m
+ep 4080/5000 steps=654851 score20=13.30 eps=0.010 loss=0.02234 q=1.102 sps=362 elapsed=30.1m
+ep 4100/5000 steps=658588 score20=11.90 eps=0.010 loss=0.02266 q=1.073 sps=362 elapsed=30.3m
+  [eval] ep=4100 mean=11.30+-1.47 median=12.0 max=23 P(>=120)=0.00 entropy=1.96/2.20 wnorm=60.771 srank=243/512
+ep 4120/5000 steps=662177 score20=11.40 eps=0.010 loss=0.01890 q=1.095 sps=362 elapsed=30.5m
+ep 4140/5000 steps=666292 score20=13.25 eps=0.010 loss=0.02083 q=1.096 sps=362 elapsed=30.7m
+ep 4160/5000 steps=670258 score20=12.65 eps=0.010 loss=0.01932 q=1.088 sps=362 elapsed=30.9m
+ep 4180/5000 steps=675181 score20=15.90 eps=0.010 loss=0.02116 q=1.094 sps=362 elapsed=31.1m
+ep 4200/5000 steps=678730 score20=11.30 eps=0.010 loss=0.02049 q=1.104 sps=361 elapsed=31.3m
+  [eval] ep=4200 mean=14.30+-1.22 median=14.0 max=29 P(>=120)=0.00 entropy=2.13/2.20 wnorm=61.920 srank=241/512
+ep 4220/5000 steps=682786 score20=13.05 eps=0.010 loss=0.01920 q=1.090 sps=361 elapsed=31.5m
+ep 4240/5000 steps=685635 score20=9.10 eps=0.010 loss=0.01778 q=1.091 sps=361 elapsed=31.7m
+ep 4260/5000 steps=688724 score20=9.70 eps=0.010 loss=0.02182 q=1.078 sps=361 elapsed=31.8m
+ep 4280/5000 steps=692546 score20=12.10 eps=0.010 loss=0.02065 q=1.105 sps=361 elapsed=32.0m
+ep 4300/5000 steps=695862 score20=10.50 eps=0.010 loss=0.02282 q=1.154 sps=361 elapsed=32.1m
+  [eval] ep=4300 mean=13.70+-1.90 median=13.0 max=30 P(>=120)=0.00 entropy=1.90/2.20 wnorm=62.858 srank=243/512
+ep 4320/5000 steps=699472 score20=11.50 eps=0.010 loss=0.02369 q=1.196 sps=360 elapsed=32.4m
+ep 4340/5000 steps=703900 score20=14.25 eps=0.010 loss=0.02438 q=1.203 sps=361 elapsed=32.5m
+ep 4360/5000 steps=706896 score20=9.50 eps=0.010 loss=0.02242 q=1.232 sps=361 elapsed=32.7m
+ep 4380/5000 steps=709792 score20=9.20 eps=0.010 loss=0.02641 q=1.238 sps=361 elapsed=32.8m
+ep 4400/5000 steps=713371 score20=11.35 eps=0.010 loss=0.02362 q=1.234 sps=361 elapsed=32.9m
+  [eval] ep=4400 mean=11.00+-1.42 median=11.0 max=26 P(>=120)=0.00 entropy=2.05/2.20 wnorm=63.855 srank=246/512
+ep 4420/5000 steps=716837 score20=11.05 eps=0.010 loss=0.02206 q=1.199 sps=360 elapsed=33.1m
+ep 4440/5000 steps=720169 score20=10.65 eps=0.010 loss=0.02716 q=1.196 sps=361 elapsed=33.3m
+ep 4460/5000 steps=724129 score20=12.60 eps=0.010 loss=0.02332 q=1.143 sps=361 elapsed=33.4m
+ep 4480/5000 steps=727925 score20=12.10 eps=0.010 loss=0.02350 q=1.145 sps=361 elapsed=33.6m
+ep 4500/5000 steps=731155 score20=10.25 eps=0.010 loss=0.02550 q=1.169 sps=361 elapsed=33.7m
+  [eval] ep=4500 mean=14.30+-1.98 median=11.5 max=34 P(>=120)=0.00 entropy=1.64/2.20 wnorm=64.797 srank=248/512
+ep 4520/5000 steps=735362 score20=13.50 eps=0.010 loss=0.02048 q=1.182 sps=361 elapsed=34.0m
+ep 4540/5000 steps=738332 score20=9.30 eps=0.010 loss=0.02542 q=1.199 sps=361 elapsed=34.1m
+ep 4560/5000 steps=742340 score20=12.85 eps=0.010 loss=0.02414 q=1.205 sps=361 elapsed=34.3m
+ep 4580/5000 steps=746336 score20=12.70 eps=0.010 loss=0.02387 q=1.199 sps=361 elapsed=34.5m
+ep 4600/5000 steps=749605 score20=10.45 eps=0.010 loss=0.02521 q=1.199 sps=361 elapsed=34.6m
+  [eval] ep=4600 mean=12.50+-1.39 median=12.5 max=24 P(>=120)=0.00 entropy=1.91/2.20 wnorm=65.841 srank=248/512
+ep 4620/5000 steps=753485 score20=12.35 eps=0.010 loss=0.02524 q=1.217 sps=360 elapsed=34.9m
+ep 4640/5000 steps=757660 score20=13.40 eps=0.010 loss=0.02443 q=1.240 sps=360 elapsed=35.0m
+ep 4660/5000 steps=761720 score20=13.05 eps=0.010 loss=0.02482 q=1.259 sps=361 elapsed=35.2m
+ep 4680/5000 steps=764918 score20=10.30 eps=0.010 loss=0.02480 q=1.304 sps=361 elapsed=35.3m
+ep 4700/5000 steps=768405 score20=11.00 eps=0.010 loss=0.02840 q=1.285 sps=361 elapsed=35.5m
+  [eval] ep=4700 mean=12.90+-1.23 median=12.0 max=26 P(>=120)=0.00 entropy=1.65/2.20 wnorm=66.901 srank=249/512
+ep 4720/5000 steps=772068 score20=11.65 eps=0.010 loss=0.02842 q=1.307 sps=361 elapsed=35.7m
+ep 4740/5000 steps=775972 score20=12.50 eps=0.010 loss=0.02848 q=1.339 sps=361 elapsed=35.8m
+ep 4760/5000 steps=779353 score20=10.75 eps=0.010 loss=0.03063 q=1.331 sps=361 elapsed=36.0m
+ep 4780/5000 steps=782758 score20=10.90 eps=0.010 loss=0.03469 q=1.302 sps=361 elapsed=36.1m
+ep 4800/5000 steps=786166 score20=10.85 eps=0.010 loss=0.02480 q=1.314 sps=361 elapsed=36.3m
+  [eval] ep=4800 mean=9.70+-1.14 median=10.0 max=19 P(>=120)=0.00 entropy=1.80/2.20 wnorm=67.897 srank=250/512
+ep 4820/5000 steps=790022 score20=12.30 eps=0.010 loss=0.02725 q=1.279 sps=361 elapsed=36.5m
+ep 4840/5000 steps=793734 score20=11.90 eps=0.010 loss=0.02759 q=1.285 sps=361 elapsed=36.7m
+ep 4860/5000 steps=797014 score20=10.45 eps=0.010 loss=0.02298 q=1.364 sps=361 elapsed=36.8m
+ep 4880/5000 steps=800554 score20=11.35 eps=0.010 loss=0.02575 q=1.350 sps=361 elapsed=37.0m
+ep 4900/5000 steps=804783 score20=13.60 eps=0.010 loss=0.02311 q=1.346 sps=361 elapsed=37.2m
+  [eval] ep=4900 mean=10.40+-1.33 median=10.0 max=22 P(>=120)=0.00 entropy=1.73/2.20 wnorm=68.735 srank=249/512
+ep 4920/5000 steps=808840 score20=12.90 eps=0.010 loss=0.02769 q=1.322 sps=360 elapsed=37.4m
+ep 4940/5000 steps=812675 score20=12.30 eps=0.010 loss=0.02736 q=1.266 sps=360 elapsed=37.6m
+ep 4960/5000 steps=816345 score20=11.75 eps=0.010 loss=0.02862 q=1.267 sps=360 elapsed=37.7m
+ep 4980/5000 steps=819715 score20=10.70 eps=0.010 loss=0.02334 q=1.267 sps=360 elapsed=37.9m
+ep 5000/5000 steps=822458 score20=8.55 eps=0.010 loss=0.02165 q=1.263 sps=360 elapsed=38.0m
+  [eval] ep=5000 mean=7.20+-1.04 median=8.0 max=17 P(>=120)=0.00 entropy=1.38/2.20 wnorm=69.623 srank=251/512
+creating GIF from: final_results\08_ddqn_img_cnn_aug_5000\DDQN_seed0_0806_211939\best.pt
+saved=final_results\08_ddqn_img_cnn_aug_5000\DDQN_seed0_0806_211939\best_agent.gif
+saved_observation=final_results\08_ddqn_img_cnn_aug_5000\DDQN_seed0_0806_211939\best_agent_observation.gif
+seed=20000 score=19 frames=289 fps=15.00 device=cuda model=image
+Saved to: final_results\08_ddqn_img_cnn_aug_5000\DDQN_seed0_0806_211939
+Random : mean=9.80 median=10.0 max=21
+Learned: mean=7.20+-1.04 median=8.0 max=17 P(>=120)=0.00 entropy=1.38

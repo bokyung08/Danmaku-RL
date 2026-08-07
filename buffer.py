@@ -22,12 +22,13 @@ class ReplayBuffer:
         self.capacity = capacity
         self.obs_shape = tuple(obs_shape)
         self.device = torch.device(device)
+        self.data_type = torch.uint8 if len(obs_shape) > 2 else torch.float32
 
         # 이미지 관측은 uint8로 저장한다. float32로 저장하면 메모리가 4배가 되고,
         # 어차피 model.forward()에서 한 번 변환하므로 여기서는 uint8을 유지한다.
         # 메모리 = capacity * 2 * prod(obs_shape) 바이트
-        self.observations = torch.empty((capacity, *self.obs_shape), dtype=torch.uint8)
-        self.next_observations = torch.empty((capacity, *self.obs_shape), dtype=torch.uint8)
+        self.observations = torch.empty((capacity, *self.obs_shape), dtype=self.data_type)
+        self.next_observations = torch.empty((capacity, *self.obs_shape), dtype=self.data_type)
         self.actions = torch.empty((capacity, 1), dtype=torch.long)
         self.rewards = torch.empty((capacity, 1), dtype=torch.float32)
         self.dones = torch.empty((capacity, 1), dtype=torch.float32)
@@ -39,9 +40,11 @@ class ReplayBuffer:
         return self.size
 
     def _as_obs_tensor(self, obs):
-        # env가 주는 관측은 np.uint8 (4,84,84). deque에서 np.stack된 배열이라
-        # 연속 메모리를 보장하기 위해 ascontiguousarray를 거친다.
-        return torch.from_numpy(np.ascontiguousarray(obs, dtype=np.uint8))
+        # 이미지 관측(uint8)과 벡터 관측(float32, [-1,1])을 self.data_type에 맞는
+        # numpy dtype으로 캐스팅한다. 항상 uint8로 캐스팅하면 벡터 관측이 망가진다.
+        # deque에서 np.stack된 배열이라 연속 메모리를 보장하기 위해 ascontiguousarray를 거친다.
+        numpy_dtype = np.uint8 if self.data_type == torch.uint8 else np.float32
+        return torch.from_numpy(np.ascontiguousarray(obs, dtype=numpy_dtype))
 
     @torch.no_grad()
     def add(self, transition):

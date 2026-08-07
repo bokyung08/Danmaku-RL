@@ -67,7 +67,9 @@ def _move_ball(ball, agent_prev, agent_next, agent_r):
         if hit_t is not None:
             # ball_end까지 다 이동시키지 않고, 실제로 닿은 지점(hit_t)에서 멈춘다.
             ball.x, ball.y = _lerp(ball_start, ball_end, hit_t)
-            return True
+            # hit_t는 이 sub-step 안에서의 시점이므로, agent 보정용으로는
+            # elapsed를 더해 프레임 전체 기준 절대 시점으로 바꿔서 돌려준다.
+            return True, elapsed + hit_t * dt
 
         ball.x, ball.y = ball_end
         elapsed += dt
@@ -78,7 +80,7 @@ def _move_ball(ball, agent_prev, agent_next, agent_r):
         if tx == dt: ball.vx *= -1
         if ty == dt: ball.vy *= -1
 
-    return False
+    return False, None
 
 # 직선 이동에 대한 collision. 충돌 시 이번 sub-step 안에서 닿은 시점(hit_t, 0~1)을,
 # 충돌이 없으면 None을 반환한다.
@@ -171,9 +173,13 @@ class Game:
         _move_agent(state.agent, action)
         agent_next = (state.agent.x, state.agent.y)
 
-        for ball in state.balls: 
-            if _move_ball(ball, agent_prev, agent_next, state.agent.r):
+        for ball in state.balls:
+            is_collision, hit_t = _move_ball(ball, agent_prev, agent_next, state.agent.r)
+            if is_collision:
+                # agent도 공과 같은 충돌 시점에서 멈춘 위치로 되돌림
+                state.agent.x, state.agent.y = _lerp(agent_prev, agent_next, hit_t)
                 state.alive = False
+                
                 
 
         if state.steps % config.BALL_ADD_FREQUENCY == 0:

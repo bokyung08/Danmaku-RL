@@ -68,19 +68,20 @@ class Renderer:
         image = pygame.surfarray.array3d(self.canvas)  # (width, height, channel)
         return image.transpose(1,0,2)  # (height, width, channel)
 
-    def get_grayscale_image(self, game: Game):
+    def get_grayscale_image(self, game: Game, size=None):
         """agent/ball만 그린 (height, width) 흑백 이미지를 반환한다.
 
         RGB로 그린 뒤 흑백으로 변환하는 대신 처음부터 흑백 값으로 그려서
         훨씬 빠르다 (RGB 렌더 5.3ms -> 흑백 렌더 0.4ms). 학습 관측 전용 경로라
         get_image()와 달리 배경을 0으로 둔다 (위 gray_background 설명 참고).
+
+        size가 주어지면 pygame.transform.scale로 그 크기까지 축소해서 반환한다.
+        (PIL BILINEAR 대비 화질은 약간 거칠지만 훨씬 빠르다 - resize_image 대체.)
         """
         state = game.state
         canvas = self.gray_canvas
 
         canvas.fill(self.gray_background)
-        # agent를 먼저, ball을 나중에 그린다 (draw_canvas와 같은 순서).
-        # 둘이 겹칠 때(=충돌 직전) ball이 보이도록 순서를 맞춰야 한다.
         pygame.draw.circle(
             canvas, self.gray_agent,
             (round(state.agent.x), round(state.agent.y)), state.agent.r,
@@ -90,9 +91,10 @@ class Renderer:
                 canvas, self.gray_ball, (round(ball.x), round(ball.y)), ball.r,
             )
 
-        pixels = pygame.surfarray.pixels2d(canvas)  # (width, height) 복사 없는 뷰
+        surface = canvas if size is None else pygame.transform.scale(canvas, size)
+        pixels = pygame.surfarray.pixels2d(surface)  # (width, height) 복사 없는 뷰
         image = np.asarray(pixels, dtype=np.uint8).T  # -> (height, width)
-        del pixels  # 캔버스 잠금 해제
+        del pixels  # 캔버스(또는 스케일된 surface) 잠금 해제
         return image
 
     def draw(self, game: Game, view_score=True):
